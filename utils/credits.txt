@@ -1,0 +1,14 @@
+LOKAL v1.0.0-alpha
+
+=> APPLIED AI
+Dr J, Polyzentrik Tmi https://www.polyzentrik.com/
+
+=> AI MODELS
+OpenAI https://github.com/openai/whisper
+Systran https://github.com/SYSTRAN/faster-whisper
+Pyannote https://huggingface.co/pyannote
+
+=> CODE WIREFRAME
+Many parties from the open source community.
+See NOTICE file for a (hopefully) full list.
+Get in touch if you feel we accidentally missed you.

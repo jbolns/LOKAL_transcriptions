@@ -1,0 +1,41 @@
+# Admin files & folders that may accidentally escape
+.archive
+.external-licenses/dist
+.vscode
+.venv
+
+scripts/__pycache__
+utils/dev_notes.md
+utils/innosetup_windows.iss
+
+
+# Files & folders for PyInstaller and InnoSetup shenanigans
+build
+dist
+lokal.spec
+
+# Models saved locally for testing (LOKAL doesn't need them for setup - they download when called/used)
+models/whisper/tiny.pt
+models/whisper/tiny.en.pt
+models/whisper/base.pt
+models/whisper/base.en.pt
+models/whisper/medium.pt
+models/whisper/medium.en.pt
+models/whisper/large.pt
+models/whisper/large-v1.pt
+models/whisper/large-v2.pt
+models/whisper/large-v3.pt
+
+models/faster-whisper/.locks
+models/faster-whisper/models--Systran--faster-whisper-tiny
+models/faster-whisper/models--Systran--faster-whisper-tiny.en
+models/faster-whisper/models--Systran--faster-whisper-base
+models/faster-whisper/models--Systran--faster-whisper-base.en
+models/faster-whisper/models--Systran--faster-whisper-small
+models/faster-whisper/models--Systran--faster-whisper-small.en
+models/faster-whisper/models--Systran--faster-whisper-medium
+models/faster-whisper/models--Systran--faster-whisper-medium.en
+models/faster-whisper/models--Systran--faster-whisper-large
+models/faster-whisper/models--Systran--faster-whisper-large-v1
+models/faster-whisper/models--Systran--faster-whisper-large-v2
+models/faster-whisper/models--Systran--faster-whisper-large-v3

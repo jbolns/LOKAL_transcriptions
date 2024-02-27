@@ -1,0 +1,1 @@
+For easier organisation, each model family gets a folder regardless of whether model ships with LOKAL or is downloaded when called/used.

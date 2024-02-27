@@ -1,0 +1,22 @@
+LOKAL_transcriptions v1.0.0-alpha
+Copyright (c) 2023 Jose A Bolanos / Polyzentrik Tmi.
+
+This product includes a copy of pyannote's diarization software, available under a MIT license.
+Copyright (c) CNRS
+The license and details for this software are available in the folder ./.external-licenses/core/pyannote-diarization.
+
+This product includes a copy of pyannote's segmentation software, available under a MIT license.
+Copyright (c) 2023 CNRS
+The license and details for this software are available in the folder ./.external-licenses/core/pyannote-segmentation.
+
+This product includes a copy of pyannote's embedding software, available under a MIT license.
+Copyright (c) 2023 CNRS
+The license and details for this software are available in the folder ./.external-licenses/core/pyannote-embedding.
+
+This product includes a copy of wespeaker-voxceleb-resnet34-LM, available under an Apache 2.0 license.
+Copyright (c) ??
+The license and details for this software are available in the folder ./.external-licenses/core/wespeaker
+
+-
+
+Refer to ['changelog_python_libs'](utils\changelog_python_libs.md) for changes to any libraries required for LOKAL and/or included in LOKAL's standalone distribution.
