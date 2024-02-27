@@ -45,7 +45,8 @@ Below a guide of options given by LOKAL.
 
 #### Model
 * *Model (family).* Use the dropwodn to choose the family of models to use for transcription.
-  * Currently, LOKAL offers two model families, OpenAI's Whisper and Systran's take on Whisper, called "faster-whisper". Faster whisper is, well, faster, but in our limited experience, the original Whisper can be more robust.
+  * Currently, LOKAL offers two model families, OpenAI's Whisper and Systran's take on Whisper, called "faster-whisper".
+  * OpenAI's Whisper requires FFmpeg. Systran's Faster Whisper does not.
   * The goal is to add more options.
 * *Model (size).* Use the dropdown to specify the model size to use for transcription.
   * Models come in different sizes. The larger the model, the better the output. The larger the model, the longer the transcription takes.
