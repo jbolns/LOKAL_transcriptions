@@ -12,7 +12,6 @@ utils/innosetup_windows.iss
 # Files & folders for PyInstaller and InnoSetup shenanigans
 build
 dist
-lokal.spec
 
 # Models saved locally for testing (LOKAL doesn't need them for setup - they download when called/used)
 models/whisper/tiny.pt
