@@ -14,7 +14,7 @@ There are two ways to set LOKAL up, the **easy** and the **easy-if-you-Python** 
 > *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). You might already have FFmpeg if you use audio, video, or multimedia files often. Alternatively, setup guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
 
 ### Standalone distribution (easy)
-1. Download the standalone executable file available [here](#).
+1. Download the executable (.exe) installation file available as part of the [latest release](https://github.com/jbolns/LOKAL_transcriptions/releases).
 2. Double-click.
 3. Install.
 
