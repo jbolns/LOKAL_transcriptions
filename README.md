@@ -101,11 +101,9 @@ We won't charge you for a quick usage question.
 ## License
 LOKAL (transcriptions) is a product by [polyzentrik.com](https://www.polyzentrik.com/), released in its current version 1.0.0-alpha under an Apache 2.0 open source license.
 
-We ask you to [make a small voluntary payment via our website](https://www.polyzentrik.com/help-us-help/) if you are using LOKAL for paid, funded, commercial, or profitable research, non-governmental, governmental, or business activities. It would help us develop LOKAL further.
+We ask you to [make a small voluntary payment via our website](https://www.polyzentrik.com/help-us-help/) if you are using LOKAL for paid, funded, commercial, or profitable research, non-governmental, governmental, or business activities. It would help us develop LOKAL further. The suggested amount is $/€/£ 3 per hour of audio or $/€/£ 125 per calendar year, whichever is lower.
 
-That said, the software is yours to use at the lowest cost point needed to achieve your goals while reducing risk exposure.
-
-Also, students, even funded PhD students, are encouraged not to even consider making any kind of voluntary payment.
+That said, the software is yours to use at the lowest cost point needed to achieve your goals while reducing risk exposure. Also, students need not to worry.
 
 ---
 
