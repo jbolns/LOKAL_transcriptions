@@ -17,9 +17,9 @@ Simply...
 3. Install.
 4. Use
 
-> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
+> *Note.* Currently, audios need to be in .wav format. If you need to convert audios, many audio software can handle this transcription easily (we like VLC).
 
-> *Note.* LOKAL installs to USER programs. You may not need admin rights to set it up. However, it's best if you have admin rights – LOKAL might error otherwise.
+> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
 
 ## Installation (for coders) (skip if you are not a coder - this is hard)
 You can also use LOKAL as a pure Python app.
