@@ -1,7 +1,7 @@
 # LOKAL (transcriptions)
 LOKAL offers an user-friendly way to perform AI transcriptions locally on regular devices, including personal computers. Output quality is comparable with many on-cloud alternatives.
 
-## Why/when to use LOKAL (transcriptions)?
+## Why/when to use LOKAL?
 Interviews, focus groups, statements, and other oral stories can hold biometric data, personal identifiable information (PII), and sensitive details. The risks of sharing such data with untrusted 3rd parties is significant, including a potential for audio "deepfakes".
 
 If necessary consents, safeguards, and a trusted provider are in place, you might not need LOKAL. Otherwise, consider using LOKAL. 
@@ -32,10 +32,10 @@ You can also use LOKAL as a pure Python app.
 
 > *Note.* A little debugging might be needed. Many libraries are involved, which can cause some friction. Additionally, for progress bars to render to GUI, small library adjustments are needed. See [this file](./utils/changelog_python_libs.md) for details.
 
-## Using LOKAL (transcriptions)
+## Using LOKAL
 Below a guide of options given by LOKAL. 
 
-Reading this section after or while looking at this [image](https://repository-images.githubusercontent.com/764310700/c6dd971d-ca0a-4d23-b735-669baae54b77). LOKAL gives users MANY options, which can sound intimidating. However, using LOKAL is as easy as clicking on dropdowns and selecting options.
+Read this section after or while looking at this [image](https://repository-images.githubusercontent.com/764310700/c6dd971d-ca0a-4d23-b735-669baae54b77). LOKAL gives users MANY options, which can sound intimidating. However, using LOKAL is as easy as clicking on dropdowns and selecting options.
 
 ### Required selections:
 
@@ -78,11 +78,11 @@ Optional hyper-parameters will be shown as available depending on the combinatio
   * The diarisation model can try and guess the number of speakers, but it tends to do better if said number is given clearly from the outset.
 
 ## Known limitations
-LOKAL (transcriptions) aims to assist humans with preparatory tasks rather than replace humans. Reducing the costs and time of initial speech-to-text conversion allows users to assign more resources on editing. 
+LOKAL aims to assist humans with preparatory tasks rather than replace humans. Reducing the costs and time of initial speech-to-text conversion allows users to assign more resources on editing. 
 
 For the same reason, users remain in control and are responsible for the final quality of transcriptions. Users should therefore keep in mind all AI models and systems have limitations.
 
-LOKAL (transcriptions)'s limitations include but are not limited to:
+LOKAL's limitations include but are not limited to:
 * All models may present potentially high error rates.
 * The segmentation and diarisation approaches and models used in these approaches can struggle with overlapping speakers.
 * The transcription models can struggle with names, places, acronyms, and potentially, accents. Users must not use outputs without editing them.
