@@ -8,31 +8,36 @@ If necessary consents, safeguards, and a trusted provider are in place, you migh
 
 LOKAL runs locally[^1] on your computer. It can avoid you the need to send audios out.[^2]
 
-## Installation
-There are two ways to set LOKAL up, the **easy** and the **easy-if-you-Python** approaches.
+## Installation (for non-coders)
+Use the standalone version of LOKAL if you do not have Python installed on your computer.
 
-> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). You might already have FFmpeg if you use audio, video, or multimedia files often. Alternatively, setup guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
-
-### Standalone distribution (easy)
-1. Download the executable (.exe) installation file available as part of the [latest release](https://github.com/jbolns/LOKAL_transcriptions/releases).
+Simply... 
+1. Download the executable (.exe) installation file available [here](https://github.com/jbolns/LOKAL_transcriptions/releases).
 2. Double-click.
 3. Install.
+4. Use
 
-> *Note.* The standalone installs to USER programs, so you may not need admin rights to set LOKAL up. However, if you do NOT have admin rights, LOKAL might error sometimes.
+> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
 
-### Python repository (easy-if-you-Python)
+> *Note.* LOKAL installs to USER programs. You may not need admin rights to set it up. However, it's best if you have admin rights – LOKAL might error otherwise.
+
+## Installation (for coders) (skip if you are not a coder - this is hard)
 You can also use LOKAL as a pure Python app.
-* Clone this repository.
-* Create an environment to install all required libraries.
-* Install required libraries using *<u>pip install requirements.txt</u>*.
-* Run LOKAL using *<u>python lokal.py</u>* or *<u>python -m lokal</u>*.
+1. Clone this repository.
+2. Create an environment to install all required libraries.
+3. Install required libraries using *<u>pip install requirements.txt</u>*.
+4. Run LOKAL using *<u>python lokal.py</u>* or *<u>python -m lokal</u>*.
+
+> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
 
 > *Note.* A little debugging might be needed. Many libraries are involved, which can cause some friction. Additionally, for progress bars to render to GUI, small library adjustments are needed. See [this file](./utils/changelog_python_libs.md) for details.
 
 ## Using LOKAL (transcriptions)
-Below a guide of options given by LOKAL.
+Below a guide of options given by LOKAL. 
 
-### Required parameters:
+Reading this section after or while looking at this [image](https://repository-images.githubusercontent.com/764310700/c6dd971d-ca0a-4d23-b735-669baae54b77). LOKAL gives users MANY options, which can sound intimidating. However, using LOKAL is as easy as clicking on dropdowns and selecting options.
+
+### Required selections:
 
 #### Audio selection
 * *Select audio.* Press select audio to choose the audio to transcribe. 
@@ -58,12 +63,12 @@ Below a guide of options given by LOKAL.
   * *Segmentation.* A transcription split into paragraphs roughly following pauses and changes of speakers. Best for semi-structured conversations like interviews and focus groups, where tracking speaker changes is easier.
   * *Diarisation.* A transcription split into blocks roughly corresponding to segments by specific speakers (with speaker labels). Best for structured conversations where speakers have clear turns and speaker changes are clear, like panels or seminars.
 
-Language choices:
+#### Language:
 * *Language.* Use the dropdown to select the language for transcription.
   * If left blank, the model tries to identify the language by itself. 
   * Specifying the language might make it easier for the model and speed things a little.
 
-### Optional parameters:
+### Optional selections:
 Optional hyper-parameters will be shown as available depending on the combination of required parameters selected by the user.
 * *Ignore short segments.* Use the meter to set a threshold to ignore short words/comments, like fillers or interruptions.
   * If treshold is too high, it might ignore parts of sentences before/after pauses.
@@ -73,9 +78,9 @@ Optional hyper-parameters will be shown as available depending on the combinatio
   * The diarisation model can try and guess the number of speakers, but it tends to do better if said number is given clearly from the outset.
 
 ## Known limitations
-LOKAL (transcriptions) aims to assist humans with preparatory tasks rather than replace humans. Reducing the costs and time needed for initial speech-to-text conversion allows users to focus resources on editing. 
+LOKAL (transcriptions) aims to assist humans with preparatory tasks rather than replace humans. Reducing the costs and time of initial speech-to-text conversion allows users to assign more resources on editing. 
 
-As such, users remain in control and are responsible for the final quality of transcriptions. To this end, users should keep in mind all AI models and systems have limitations.
+For the same reason, users remain in control and are responsible for the final quality of transcriptions. Users should therefore keep in mind all AI models and systems have limitations.
 
 LOKAL (transcriptions)'s limitations include but are not limited to:
 * All models may present potentially high error rates.
@@ -101,7 +106,7 @@ We won't charge you for a quick usage question.
 ## License
 LOKAL (transcriptions) is a product by [polyzentrik.com](https://www.polyzentrik.com/), released in its current version 1.0.0-alpha under an Apache 2.0 open source license.
 
-We ask you to [make a small voluntary payment via our website](https://www.polyzentrik.com/help-us-help/) if you are using LOKAL for paid, funded, commercial, or profitable research, non-governmental, governmental, or business activities. It would help us develop LOKAL further. The suggested amount is €3 per hour of audio or €125 per user per year, whichever is lower. Organisations are welcome to get in touch for multi-user sponsorships.
+We ask you to [make a small voluntary payment via our website](https://www.polyzentrik.com/help-us-help/) if you are using LOKAL for paid, funded, commercial, or profitable research, non-governmental, governmental, or business activities. It would help us develop LOKAL further. The suggested amount is €3 per hour of audio or €90 per user per year, whichever is lower. Organisations are welcome to get in touch for multi-user sponsorships.
 
 That said, the software is yours to use at the lowest cost point needed to achieve your goals while reducing risk exposure. Also, students need not to worry.
 
