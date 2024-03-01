@@ -3,6 +3,7 @@
 v1. Jan 2024.
 @author: Dr J. / Polyzentrik Tmi.
 
+Save for a glorious class to enable real-time updates,
 LOKAL sticks to a functional programming paradigm.
 Any classes must be justified exceptionally well.
 
@@ -536,26 +537,61 @@ def hparams(approach):
 
 def logger(text):
     ''' F(x) inserts any app generated updates to main app console.
+        Ugliest function ever, but there is a need to be very careful 
+        not to accidentally trigger an infinite loop if a transcribed
+        line ends up having similar words/chars as progress bar updates.
     '''
 
+    # FUN STORY
+    # The "console" on the GUI is not actually a "console"
+    # One needs to take and put things into it as required
+
+    # Annoying warnings that users do not need to see
     if 'torchaudio backend is switched to' in text\
         or 'torchvision is not available' in text\
             or 'HF_HUB_DISABLE_SYMLINKS_WARNING' in text:
         pass
-    elif '%' in text:
-        if 'vocabulary' in text\
-            or 'tokenizer' in text\
-                or 'config.json' in text:
-            pass
-        elif 'model.bin' in text:
-            text = text.replace('[A', '')
-            console_frame.delete('end-3l', END)
-            console_frame.insert('end', u'\n{}'.format(text))
+
+    # Progress bars
+    # ELIF is very case by case to avoid accidentally 
+    # treating a real update as a progress bar update
+    
+    elif '%' in text: 
+        
+        # FASTER WHISPER DOWNLOADS
+        if 'vocabulary.txt' in text\
+            or 'tokenizer.json' in text\
+                or 'config.json' in text\
+                    or 'model.bin' in text: 
+            
+            # Flag last line of download intro
+            # Hard flag possible: filenames unlikely elsewhere
+            # Delete any lines after
+            bool = True 
+            while bool == True:
+                console_frame.delete('end-1l', END)
+                if console_frame.get("end-1c linestart", "end-1c lineend").startswith('Else, the model needs to download,'):
+                    bool = False
+            
+            # Write the update
+            if 'model.bin' in text:
+                text = text.replace('\n', '').strip()
+                text = f'\n\nDownloading...\n{text}'
+                console_frame.insert(END, text)
+            else:
+                print('\n\nDownloading...\n')
+        
+        # pyannote's (RICH) BARS
         elif 'segmentation' in text\
             or 'embeddings'\
                 or 'diarization' in text:
             console_frame.delete('end-2l', END)
-            console_frame.insert('end', u'\n{}'.format(text))
+            console_frame.insert('end', '\n{}'.format(text))
+
+        # TREAT ANYTHING ELSE AS A NORMAL UPDATE
+        # Better to render a progress bar badly than jam the log
+        else:
+            console_frame.insert(INSERT, text)
     else:
         console_frame.insert(INSERT, text)
     console_frame.see('end')
