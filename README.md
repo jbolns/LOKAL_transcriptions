@@ -8,8 +8,8 @@ If necessary consents, safeguards, and a trusted provider are in place, you migh
 
 LOKAL runs locally[^1] on your computer. It can avoid you the need to send audios out.[^2]
 
-## Installation (for non-coders)
-Use the standalone version of LOKAL if you do not have Python installed on your computer.
+## Installation (no coding required)
+If you want to save time, use the standalone version of LOKAL.
 
 Simply... 
 1. Download the executable (.exe) installation file available [here](https://github.com/jbolns/LOKAL_transcriptions/releases).
@@ -21,12 +21,20 @@ Simply...
 
 > *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
 
-## Installation (for coders) (skip if you are not a coder - this is hard)
-You can also use LOKAL as a pure Python app.
+## Installation (coding required) (skip if not a coder – it is REALLY hard)
+You can also use LOKAL as a pure Python app. This will give you the ability to tinker with the code and might (and only might) make LOKAL a little (and only a little) faster.
+
+Assuming you have Python (3.11.0) installed on your computer:
 1. Clone this repository.
-2. Create an environment to install all required libraries.
-3. Install required libraries using *<u>pip install requirements.txt</u>*.
+   * The *main* branch has the latest released version.
+   * The *dev* branch has latest commits, to be shipped on next release.
+   * For guidance, see https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository and https://stackoverflow.com/questions/1778088/how-do-i-clone-a-single-branch-in-git.
+2. Create an environment around it.
+   * For guidance, see https://docs.python.org/3/library/venv.html.
+3. Install required libraries using *<u>pip install -r requirements.txt</u>*.
+   * For guidance, see https://pip.pypa.io/en/stable/user_guide/.
 4. Run LOKAL using *<u>python lokal.py</u>* or *<u>python -m lokal</u>*.
+   * For guidance, see https://pythonbasics.org/execute-python-scripts/.
 
 > *Note.* Currently, audios need to be in .wav format. If you need to convert audios, many audio software can handle this transcription easily (we like VLC).
 
