@@ -331,9 +331,11 @@ def run():
 
     # Check audio is selected and T&Cs are agreed, proceed if so
     if settings['filepath'] == '':
-        logger('...\nYou have not selected an audio file.')
+        logger('\n\n...\nYou have not selected an audio file. You need to select an audio for a transcription to be possible.')
+        popbox = messagebox.showwarning('showwarning', 'You have not selected an audio file. It is therefore impossible to proceed.')
     elif settings['terms'] == 0:
-        logger('...\nYou have not accepted the terms and conditions.')
+        logger('\n\n...\nYou have not accepted the terms and conditions. You need to accept the terms and conditions for a transcription to be possible.')
+        popbox = messagebox.showwarning('showwarning', 'You have not accepted the terms and conditions. It is therefore impossible to proceed.')
     else:
         hps_frame.forget()
         notifications_frame.pack(fill=X, expand=TRUE, padx=48)
