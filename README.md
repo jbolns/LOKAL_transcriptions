@@ -111,7 +111,7 @@ You can also use LOKAL as a pure Python app. Assuming you have Python (3.11.0) i
    * For guidance, see https://pythonbasics.org/execute-python-scripts/.
 
 > *Note.* Some (but not all) features require [FFmpeg](https://www.ffmpeg.org/). 
-> * If you do not have FFmpeg and wish to install it, guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). Alternatively, ffmpeg-python (*pip install ffmpeg-python*) may do the trick.
+> * If you do not have FFmpeg and wish to install it, guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). Alternatively, ffmpeg-python (*pip install ffmpeg-python*) might do the trick.
 > * If you do not have FFmpeg and do not want to install, you can still use LOKAL by sticking to *.wav* audios and Systran/faster-whisper models.
 
 .
