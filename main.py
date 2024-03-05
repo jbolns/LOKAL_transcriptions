@@ -490,8 +490,9 @@ def browse_for_file():
                                             initialdir=path_to_open)
     if audio_file:
         settings['filepath'] = audio_file
-        logger(f'\n\n..\nPath to audio is: {audio_file}.\
-               \nPlease double check.')
+        console_frame.delete('1.0', END)
+        logger(f'...\nPath to selected audio is: {audio_file}.\
+               \nPlease double check this is the file you want to transcribe before running the transcription.')
     else:
         settings['filepath'] = ''
 
