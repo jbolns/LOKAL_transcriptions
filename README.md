@@ -17,35 +17,17 @@ Simply...
 3. Install.
 4. Use
 
-> *Note.* Currently, audios need to be in .wav format. If you need to convert audios, many audio software can handle this transcription easily (we like VLC).
+> *Note.* Some (but not all) features require [FFmpeg](https://www.ffmpeg.org/). 
+> * If you do not have FFmpeg and wish to install it, guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
+> * If you do not have FFmpeg and do not want to install it, you can still use LOKAL by sticking to *.wav* audios and Systran/faster-whisper models.
 
-> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
+## Alternative OPTIONAL Python installation (coding required)
+See section at the end of this README. It was scaring people.
 
-## Installation (coding required) (skip if not a coder – it is REALLY hard)
-You can also use LOKAL as a pure Python app. This will give you the ability to tinker with the code and might (and only might) make LOKAL a little (and only a little) faster.
-
-Assuming you have Python (3.11.0) installed on your computer:
-1. Clone this repository.
-   * The *main* branch has the latest released version.
-   * The *dev* branch has latest commits, to be shipped on next release.
-   * For guidance, see https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository and https://stackoverflow.com/questions/1778088/how-do-i-clone-a-single-branch-in-git.
-2. Create an environment around it.
-   * For guidance, see https://docs.python.org/3/library/venv.html.
-3. Install required libraries using *<u>pip install -r requirements.txt</u>*.
-   * For guidance, see https://pip.pypa.io/en/stable/user_guide/.
-4. Run LOKAL using *<u>python lokal.py</u>* or *<u>python -m lokal</u>*.
-   * For guidance, see https://pythonbasics.org/execute-python-scripts/.
-
-> *Note.* Currently, audios need to be in .wav format. If you need to convert audios, many audio software can handle this transcription easily (we like VLC).
-
-> *Note.* Some (not all) models require [FFmpeg](https://www.ffmpeg.org/). If you do not have FFmpeg, stick to the "Systran" family (you'll see it in the dropdowns) or install FFmpeg. Guidance for setting up FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
-
-> *Note.* A little debugging might be needed. Many libraries are involved, which can cause some friction. Additionally, for progress bars to render to GUI, small library adjustments are needed. See [this file](./utils/changelog_python_libs.md) for details.
+Please note, this **OPTIONAL** approach is REALLY hard.
 
 ## Using LOKAL
-Below a guide of options given by LOKAL. 
-
-Read this section after or while looking at this [image](https://repository-images.githubusercontent.com/764310700/c6dd971d-ca0a-4d23-b735-669baae54b77). LOKAL gives users MANY options, which can sound intimidating. However, using LOKAL is as easy as clicking on dropdowns and selecting options.
+Below all choices users can make while using LOKAL. It's a long list, but once you open the app you'll see they're all presented fairly clearly.
 
 ### Required selections:
 
@@ -99,26 +81,44 @@ LOKAL's limitations include but are not limited to:
 * The transcription models can struggle with conversations taking place in different languages – an idea is to do multiple runs with different language selections and then join the results.
 
 ## Having troubles?
-If you find the installation hard, take a deep breath and remember, LOKAL brings AI directly to your computer. We made it as easy to install as possible, but it's understandable if you struggle a little.
+We made LOKAL as easy to install and use as possible. 
 
-Try again. And if you're really, really stuck, get in touch: hello@polyzentrik.com. 
+That said, if you're really, really stuck, get in touch: hello@polyzentrik.com. 
 
-We won't charge you for a quick set up consultation.
+We won't charge you for a quick consultation.
+
+## License
+LOKAL (transcriptions) is a product by [polyzentrik.com](https://www.polyzentrik.com/), released under an Apache 2.0 open source license.
+
+We ask you to [make a small voluntary payment via our website](https://www.polyzentrik.com/help-us-help/) if you are using LOKAL for paid, funded, commercial, or profitable research, non-governmental, governmental, or business activities. The suggested amount is €3 per hour of audio or €60 per user per year, whichever is lower. Organisations are welcome to get in touch for multi-user sponsorships. Students need not to worry.
 
 .
 
-If you run into troubles when using LOKAL, take a deep breath and remember, LOKAL brings AI directly to your computer. It's bound to error sometimes. 
+## OPTIONAL Python installation (coding required)
+**Skip this section if not a coder. It is REALLY hard.**
 
-Try again. And if you're really, really stuck, get in touch: hello@polyzentrik.com. 
+You can also use LOKAL as a pure Python app. Assuming you have Python (3.11.0) installed on your computer, you need to:
+1. Clone this repository.
+   * The *main* branch has the latest released version.
+   * The *dev* branch has latest commits, to be shipped on next release.
+   * For guidance, see https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository and https://stackoverflow.com/questions/1778088/how-do-i-clone-a-single-branch-in-git.
+2. Create an environment around it.
+   * For guidance, see https://docs.python.org/3/library/venv.html.
+3. Install required libraries using *<u>pip install -r requirements.txt</u>*.
+   * For guidance, see https://pip.pypa.io/en/stable/user_guide/.
+4. Check [this file](./utils/changelog_python_libs.md) for some tiny but necessary library adjustments needed for progress bars to render.
+5. Run LOKAL using *<u>python lokal.py</u>* or *<u>python -m lokal</u>*.
+   * For guidance, see https://pythonbasics.org/execute-python-scripts/.
 
-We won't charge you for a quick usage question.
+> *Note.* Some (but not all) features require [FFmpeg](https://www.ffmpeg.org/). 
+> * If you do not have FFmpeg and wish to install it, guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). Alternatively, ffmpeg-python (*pip install ffmpeg-python*) may do the trick.
+> * If you do not have FFmpeg and do not want to install, you can still use LOKAL by sticking to *.wav* audios and Systran/faster-whisper models.
 
-## License
-LOKAL (transcriptions) is a product by [polyzentrik.com](https://www.polyzentrik.com/), released in its current version 1.0.0-alpha under an Apache 2.0 open source license.
+.
 
-We ask you to [make a small voluntary payment via our website](https://www.polyzentrik.com/help-us-help/) if you are using LOKAL for paid, funded, commercial, or profitable research, non-governmental, governmental, or business activities. It would help us develop LOKAL further. The suggested amount is €3 per hour of audio or €90 per user per year, whichever is lower. Organisations are welcome to get in touch for multi-user sponsorships.
+.
 
-That said, the software is yours to use at the lowest cost point needed to achieve your goals while reducing risk exposure. Also, students need not to worry.
+.
 
 ---
 
@@ -127,5 +127,3 @@ That said, the software is yours to use at the lowest cost point needed to achie
 [^1]: An Internet connection is needed for initial model download. The first time you choose a model, the model downloads. After, it is possible to perform transcriptions offline. Resetting models is possible from within LOKAL, which deletes all models in memory and forces a re-download next time a model is used.
 
 [^2]: As per the license, no guarantees are offered. This includes privacy. The developer is reasonably convinced that LOKAL reduces privacy risks, but related guarantees are beyond what is currently possible. If you need to maximise privacy, run a few mock transcriptions on a computer connected to the Internet to trigger the download of any necessary models, then copy LOKAL's installation to an offline computer and run transcriptions there without connecting that computer to the Internet, ever. If you go this way, it may be worth remembering that LOKAL's standalone distribution installs to *'~/<-username->/AppData/Local/Programs/LOKAL'*, whereas the Python distribution installs to wherever you choose to save it.
-
-
