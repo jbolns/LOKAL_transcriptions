@@ -1,3 +1,35 @@
+def convert_to_wav(filepath, filename):
+    from pydub import AudioSegment
+
+    try:
+        source_folder = filepath.rpartition('/')[0]
+        new_filepath = source_folder + '/' + filename + '.wav'
+
+        # Import file
+        audio = AudioSegment.from_file(filepath)
+
+        # Export file
+        audio.export(new_filepath, format='wav')
+
+        return 1
+    except:
+        return 0
+
+
+def delete_converted_wav(filepath):
+    if filepath.endswith('wav'):
+        import os
+        try:
+            os.remove(filepath)
+            return '\n\n...\nDELETED CONVERTED AUDIO\
+                  \nSuccesfully deleted the temporary .wav version of your audio used for transcription.\n'
+        except:
+            return '\n\n...\nUNABLE TO DELETE CONVERTED AUDIO\
+                  \nLOKAL saved a .wav version of the original audio to the same folder as the original audio.\
+                  \nNormally, the converted version is deleted automatically, but there were errors with deletion.\
+                  \nCheck if the file is still there and delete manually if desired.\n'
+
+
 LANGUAGES = {
     "english": "en",
     "chinese": "zh",

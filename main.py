@@ -361,71 +361,92 @@ def run_transcription():
     name = path.rsplit('/')[-1].rsplit('.')[0]
     done = 0  # -> to 1 if transcription succeeds
 
-    # Register context f(x)'s to redirect stdout and stderr to main app window
-    f = WriteProcessor()
-    g = WriteProcessor()
+    # Check if file needs conversion, convert if so
+    conversion = 0
+    if not path.endswith('.wav'):
+        from scripts.utils import convert_to_wav
+        logger('...\nCONVERTING AUDIO TO .WAV FORMAT\
+              \nLOKAL will temporarily save a .wav version of your audio to the same folder as the original audio.\
+              \nTo avoid this step, use .wav audios.')
+        conversion = convert_to_wav(path, name)
+        if conversion == 1:
+            new_filepath = path.rpartition('/')[0] + '/' + name + '.wav'
+            path = new_filepath
+            logger('\n\n...\nAudio conversion succesful.\n\n')
+        else:
+            logger('\n\n...\nAudio conversion failed. To perform a transcription, save the audio in .wav format and try transcribing the .wav version.\n\n')
 
-    # Launch transcription
-    with redirect_stderr(f):
-        with redirect_stdout(g):
-            # Launch transcription
-            try:
-                if agree != 1:  # Reject transcription T&Cs not agreed
-                    print('...\nCannot proceed to transcription unless user agrees to terms and conditions.')
-                elif agree == 1:  # Proceed if user agreed to T&Cs
+    if path.endswith('.wav'):
+        # Register context f(x)'s to redirect stdout and stderr to main app window
+        f = WriteProcessor()
+        g = WriteProcessor()
 
-                    # If all goes well, mostly everything happens in this try
-                    try:
-                        print('...\nSTARTING TRANSCRIPTION.\
-                            \nRemember, LOKAL is made for comfort, not speed.\
-                            \nBe patient!')
-                        if approach == 'simple':
-                            from scripts.simple import transcribe_simple
-                            result, done = transcribe_simple(path, name, family, model, language)
-                        if approach == 'segmentation':
-                            from scripts.segmentation\
-                                import transcribe_segmentation
-                            HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
-                                   'min_duration_off': hps_param2.amountusedvar.get()/1000}
-                            result, done = transcribe_segmentation(path, name, family, model, language, HPs)
-                        if approach == 'diarisation':
-                            from scripts.diarisation\
-                                import transcribe_diarisation
-                            HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
-                                   'speaker_num': hps_param4.get()}
-                            result, done = transcribe_diarisation(path, name, family, model, language, HPs)
+        # Launch transcription
+        with redirect_stderr(f):
+            with redirect_stdout(g):
+                # Launch transcription
+                try:
+                    if agree != 1:  # Reject transcription T&Cs not agreed
+                        print('...\nCannot proceed to transcription unless user agrees to terms and conditions.')
+                    elif agree == 1:  # Proceed if user agreed to T&Cs
 
-                    # Error handling sucks, but idea is to delete temp folders
-                    except Exception as e:
-                        print('...\nTranscription failed. Error is:\n', e)
-                        print('...\nAttempting to delete temporary folders.')
+                        # If all goes well, mostly everything happens in this try
                         try:
-                            delete_LOKAL_temp()
-                        except:
-                            print('Unable to find or delete temporary folders.\
-                                  \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
-                                  \nIf present, delete "LOKAL_temp" to avoid future errors.')
+                            print('...\nSTARTING TRANSCRIPTION.\
+                                \nRemember, LOKAL is made for comfort, not speed.\
+                                \nBe patient!')
+                            if approach == 'simple':
+                                from scripts.simple import transcribe_simple
+                                result, done = transcribe_simple(path, name, family, model, language)
+                            if approach == 'segmentation':
+                                from scripts.segmentation\
+                                    import transcribe_segmentation
+                                HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
+                                    'min_duration_off': hps_param2.amountusedvar.get()/1000}
+                                result, done = transcribe_segmentation(path, name, family, model, language, HPs)
+                            if approach == 'diarisation':
+                                from scripts.diarisation\
+                                    import transcribe_diarisation
+                                HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
+                                    'speaker_num': hps_param4.get()}
+                                result, done = transcribe_diarisation(path, name, family, model, language, HPs)
 
-                # Exception in theory never triggered
-                else:
-                    print('...\nUnknown error.')
+                        # Error handling sucks, but idea is to delete temp folders
+                        except Exception as e:
+                            print('...\nTranscription failed. Error is:\n', e)
+                            print('...\nAttempting to delete temporary folders.')
+                            try:
+                                delete_LOKAL_temp()
+                            except:
+                                print('Unable to find or delete temporary folders.\
+                                    \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
+                                    \nIf present, delete "LOKAL_temp" to avoid future errors.')
 
-                # Check timer and pop message if transcription succeeds
-                if done == 1:
-                    end_time = time.time()
-                    execution_time = (end_time - start_time)
-                    mm, ss = divmod(execution_time, 60)
-                    hh, mm = divmod(mm, 60)
-                    duration = f'{int(hh):02}:{int(mm):02}:{int(ss):02}'
-                    victory_msg = f'\n...\n{result}\
-                        \nExecution time: {duration}.\
-                        \n\n...\nTHANK YOU FOR USING LOKAL!'
-                    print(victory_msg)
-                    return victory_msg
-            except:
-                fail_msg = 'Transcription failed. Try a different model/approach.'
-                print(fail_msg)
-                return fail_msg
+                    # Exception in theory never triggered
+                    else:
+                        print('...\nUnknown error.')
+
+                    if conversion == 1:
+                        from scripts.utils import delete_converted_wav
+                        deletion_msg = delete_converted_wav(path)
+                        logger(deletion_msg)
+
+                    # Check timer and pop message if transcription succeeds
+                    if done == 1:
+                        end_time = time.time()
+                        execution_time = (end_time - start_time)
+                        mm, ss = divmod(execution_time, 60)
+                        hh, mm = divmod(mm, 60)
+                        duration = f'{int(hh):02}:{int(mm):02}:{int(ss):02}'
+                        victory_msg = f'\n...\n{result}\
+                            \nExecution time: {duration}.\
+                            \n\n...\nTHANK YOU FOR USING LOKAL!'
+                        print(victory_msg)
+                        return victory_msg
+                except:
+                    fail_msg = 'Transcription failed. Try a different model/approach.'
+                    print(fail_msg)
+                    return fail_msg
 
 
 # Nice class to enable real-time logging for transcription.
@@ -462,7 +483,9 @@ def browse_for_file():
     ''' F(x) pops window open for user to select files.
     '''
     path_to_open = find_key_paths()[1]
-    filetypes = (('wav files', '*.wav'), ('all files', '*.*'))
+    filetypes = (
+        ('common audio formats', ('*.wav', '*.mp3', '*.mp4', '*.m4a', '*.flac', '*.wma', '*.aac')),
+        ('all files', '*.*'))
     audio_file = filedialog.askopenfilename(filetypes=filetypes,
                                             initialdir=path_to_open)
     if audio_file:
