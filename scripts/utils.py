@@ -3,7 +3,7 @@ def convert_to_wav(filepath, filename):
 
     try:
         source_folder = filepath.rpartition('/')[0]
-        new_filepath = source_folder + '/' + filename + '.wav'
+        new_filepath = source_folder + '/' + filename + '-wavcopyforLOKALtranscription' + '.wav'
 
         # Import file
         audio = AudioSegment.from_file(filepath)

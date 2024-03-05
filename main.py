@@ -370,7 +370,7 @@ def run_transcription():
               \nTo avoid this step, use .wav audios.')
         conversion = convert_to_wav(path, name)
         if conversion == 1:
-            new_filepath = path.rpartition('/')[0] + '/' + name + '.wav'
+            new_filepath = path.rpartition('/')[0] + '/' + name + '-wavcopyforLOKALtranscription' + '.wav'
             path = new_filepath
             logger('\n\n...\nAudio conversion succesful.\n\n')
         else:
