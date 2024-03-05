@@ -3,6 +3,7 @@
 v1. Jan 2024.
 @author: Dr J. / Polyzentrik Tmi.
 
+Save for a glorious class to enable real-time updates,
 LOKAL sticks to a functional programming paradigm.
 Any classes must be justified exceptionally well.
 
@@ -330,9 +331,11 @@ def run():
 
     # Check audio is selected and T&Cs are agreed, proceed if so
     if settings['filepath'] == '':
-        logger('...\nYou have not selected an audio file.')
+        logger('\n\n...\nYou have not selected an audio file. You need to select an audio for a transcription to be possible.')
+        popbox = messagebox.showwarning('showwarning', 'You have not selected an audio file. It is therefore impossible to proceed.')
     elif settings['terms'] == 0:
-        logger('...\nYou have not accepted the terms and conditions.')
+        logger('\n\n...\nYou have not accepted the terms and conditions. You need to accept the terms and conditions for a transcription to be possible.')
+        popbox = messagebox.showwarning('showwarning', 'You have not accepted the terms and conditions. It is therefore impossible to proceed.')
     else:
         hps_frame.forget()
         notifications_frame.pack(fill=X, expand=TRUE, padx=48)
@@ -358,71 +361,92 @@ def run_transcription():
     name = path.rsplit('/')[-1].rsplit('.')[0]
     done = 0  # -> to 1 if transcription succeeds
 
-    # Register context f(x)'s to redirect stdout and stderr to main app window
-    f = WriteProcessor()
-    g = WriteProcessor()
+    # Check if file needs conversion, convert if so
+    conversion = 0
+    if not path.endswith('.wav'):
+        from scripts.utils import convert_to_wav
+        logger('...\nCONVERTING AUDIO TO .WAV FORMAT\
+              \nLOKAL will temporarily save a .wav version of your audio to the same folder as the original audio.\
+              \nTo avoid this step, use .wav audios.')
+        conversion = convert_to_wav(path, name)
+        if conversion == 1:
+            new_filepath = path.rpartition('/')[0] + '/' + name + '-wavcopyforLOKALtranscription' + '.wav'
+            path = new_filepath
+            logger('\n\n...\nAudio conversion succesful.\n\n')
+        else:
+            logger('\n\n...\nAudio conversion failed. To perform a transcription, save the audio in .wav format and try transcribing the .wav version.\n\n')
 
-    # Launch transcription
-    with redirect_stderr(f):
-        with redirect_stdout(g):
-            # Launch transcription
-            try:
-                if agree != 1:  # Reject transcription T&Cs not agreed
-                    print('...\nCannot proceed to transcription unless user agrees to terms and conditions.')
-                elif agree == 1:  # Proceed if user agreed to T&Cs
+    if path.endswith('.wav'):
+        # Register context f(x)'s to redirect stdout and stderr to main app window
+        f = WriteProcessor()
+        g = WriteProcessor()
 
-                    # If all goes well, mostly everything happens in this try
-                    try:
-                        print('...\nSTARTING TRANSCRIPTION.\
-                            \nRemember, LOKAL is made for comfort, not speed.\
-                            \nBe patient!')
-                        if approach == 'simple':
-                            from scripts.simple import transcribe_simple
-                            result, done = transcribe_simple(path, name, family, model, language)
-                        if approach == 'segmentation':
-                            from scripts.segmentation\
-                                import transcribe_segmentation
-                            HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
-                                   'min_duration_off': hps_param2.amountusedvar.get()/1000}
-                            result, done = transcribe_segmentation(path, name, family, model, language, HPs)
-                        if approach == 'diarisation':
-                            from scripts.diarisation\
-                                import transcribe_diarisation
-                            HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
-                                   'speaker_num': hps_param4.get()}
-                            result, done = transcribe_diarisation(path, name, family, model, language, HPs)
+        # Launch transcription
+        with redirect_stderr(f):
+            with redirect_stdout(g):
+                # Launch transcription
+                try:
+                    if agree != 1:  # Reject transcription T&Cs not agreed
+                        print('...\nCannot proceed to transcription unless user agrees to terms and conditions.')
+                    elif agree == 1:  # Proceed if user agreed to T&Cs
 
-                    # Error handling sucks, but idea is to delete temp folders
-                    except Exception as e:
-                        print('...\nTranscription failed. Error is:\n', e)
-                        print('...\nAttempting to delete temporary folders.')
+                        # If all goes well, mostly everything happens in this try
                         try:
-                            delete_LOKAL_temp()
-                        except:
-                            print('Unable to find or delete temporary folders.\
-                                  \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
-                                  \nIf present, delete "LOKAL_temp" to avoid future errors.')
+                            print('...\nSTARTING TRANSCRIPTION.\
+                                \nRemember, LOKAL is made for comfort, not speed.\
+                                \nBe patient!')
+                            if approach == 'simple':
+                                from scripts.simple import transcribe_simple
+                                result, done = transcribe_simple(path, name, family, model, language)
+                            if approach == 'segmentation':
+                                from scripts.segmentation\
+                                    import transcribe_segmentation
+                                HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
+                                    'min_duration_off': hps_param2.amountusedvar.get()/1000}
+                                result, done = transcribe_segmentation(path, name, family, model, language, HPs)
+                            if approach == 'diarisation':
+                                from scripts.diarisation\
+                                    import transcribe_diarisation
+                                HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
+                                    'speaker_num': hps_param4.get()}
+                                result, done = transcribe_diarisation(path, name, family, model, language, HPs)
 
-                # Exception in theory never triggered
-                else:
-                    print('...\nUnknown error.')
+                        # Error handling sucks, but idea is to delete temp folders
+                        except Exception as e:
+                            print('...\nTranscription failed. Error is:\n', e)
+                            print('...\nAttempting to delete temporary folders.')
+                            try:
+                                delete_LOKAL_temp()
+                            except:
+                                print('Unable to find or delete temporary folders.\
+                                    \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
+                                    \nIf present, delete "LOKAL_temp" to avoid future errors.')
 
-                # Check timer and pop message if transcription succeeds
-                if done == 1:
-                    end_time = time.time()
-                    execution_time = (end_time - start_time)
-                    mm, ss = divmod(execution_time, 60)
-                    hh, mm = divmod(mm, 60)
-                    duration = f'{int(hh):02}:{int(mm):02}:{int(ss):02}'
-                    victory_msg = f'\n...\n{result}\
-                        \nExecution time: {duration}.\
-                        \n\n...\nTHANK YOU FOR USING LOKAL!'
-                    print(victory_msg)
-                    return victory_msg
-            except:
-                fail_msg = 'Transcription failed. Try a different model/approach.'
-                print(fail_msg)
-                return fail_msg
+                    # Exception in theory never triggered
+                    else:
+                        print('...\nUnknown error.')
+
+                    if conversion == 1:
+                        from scripts.utils import delete_converted_wav
+                        deletion_msg = delete_converted_wav(path)
+                        logger(deletion_msg)
+
+                    # Check timer and pop message if transcription succeeds
+                    if done == 1:
+                        end_time = time.time()
+                        execution_time = (end_time - start_time)
+                        mm, ss = divmod(execution_time, 60)
+                        hh, mm = divmod(mm, 60)
+                        duration = f'{int(hh):02}:{int(mm):02}:{int(ss):02}'
+                        victory_msg = f'\n...\n{result}\
+                            \nExecution time: {duration}.\
+                            \n\n...\nTHANK YOU FOR USING LOKAL!'
+                        print(victory_msg)
+                        return victory_msg
+                except:
+                    fail_msg = 'Transcription failed. Try a different model/approach.'
+                    print(fail_msg)
+                    return fail_msg
 
 
 # Nice class to enable real-time logging for transcription.
@@ -459,13 +483,16 @@ def browse_for_file():
     ''' F(x) pops window open for user to select files.
     '''
     path_to_open = find_key_paths()[1]
-    filetypes = (('wav files', '*.wav'), ('all files', '*.*'))
+    filetypes = (
+        ('common audio formats', ('*.wav', '*.mp3', '*.mp4', '*.m4a', '*.flac', '*.wma', '*.aac')),
+        ('all files', '*.*'))
     audio_file = filedialog.askopenfilename(filetypes=filetypes,
                                             initialdir=path_to_open)
     if audio_file:
         settings['filepath'] = audio_file
-        logger(f'\n\n..\nPath to audio is: {audio_file}.\
-               \nPlease double check.')
+        console_frame.delete('1.0', END)
+        logger(f'...\nPath to selected audio is: {audio_file}.\
+               \nPlease double check this is the file you want to transcribe before running the transcription.')
     else:
         settings['filepath'] = ''
 
@@ -536,26 +563,61 @@ def hparams(approach):
 
 def logger(text):
     ''' F(x) inserts any app generated updates to main app console.
+        Ugliest function ever, but there is a need to be very careful 
+        not to accidentally trigger an infinite loop if a transcribed
+        line ends up having similar words/chars as progress bar updates.
     '''
 
+    # FUN STORY
+    # The "console" on the GUI is not actually a "console"
+    # One needs to take and put things into it as required
+
+    # Annoying warnings that users do not need to see
     if 'torchaudio backend is switched to' in text\
         or 'torchvision is not available' in text\
             or 'HF_HUB_DISABLE_SYMLINKS_WARNING' in text:
         pass
-    elif '%' in text:
-        if 'vocabulary' in text\
-            or 'tokenizer' in text\
-                or 'config.json' in text:
-            pass
-        elif 'model.bin' in text:
-            text = text.replace('[A', '')
-            console_frame.delete('end-3l', END)
-            console_frame.insert('end', u'\n{}'.format(text))
+
+    # Progress bars
+    # ELIF is very case by case to avoid accidentally 
+    # treating a real update as a progress bar update
+    
+    elif '%' in text: 
+        
+        # FASTER WHISPER DOWNLOADS
+        if 'vocabulary.txt' in text\
+            or 'tokenizer.json' in text\
+                or 'config.json' in text\
+                    or 'model.bin' in text: 
+            
+            # Flag last line of download intro
+            # Hard flag possible: filenames unlikely elsewhere
+            # Delete any lines after
+            bool = True 
+            while bool == True:
+                console_frame.delete('end-1l', END)
+                if console_frame.get("end-1c linestart", "end-1c lineend").startswith('Else, the model needs to download,'):
+                    bool = False
+            
+            # Write the update
+            if 'model.bin' in text:
+                text = text.replace('\n', '').strip()
+                text = f'\n\nDownloading...\n{text}'
+                console_frame.insert(END, text)
+            else:
+                print('\n\nDownloading...\n')
+        
+        # pyannote's (RICH) BARS
         elif 'segmentation' in text\
             or 'embeddings'\
                 or 'diarization' in text:
             console_frame.delete('end-2l', END)
-            console_frame.insert('end', u'\n{}'.format(text))
+            console_frame.insert('end', '\n{}'.format(text))
+
+        # TREAT ANYTHING ELSE AS A NORMAL UPDATE
+        # Better to render a progress bar badly than jam the log
+        else:
+            console_frame.insert(INSERT, text)
     else:
         console_frame.insert(INSERT, text)
     console_frame.see('end')

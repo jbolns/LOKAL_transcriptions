@@ -88,7 +88,7 @@ def transcribe_simple(filepath, filename, model_family, model_size, language):
         f.close()
 
     # Declare victory
-    return (f'Finished transcription of: {filepath}. \
+    return (f'Finished transcription of: {filename}. \
            \nFind it on the same folder as your audio.', 1)
 
 

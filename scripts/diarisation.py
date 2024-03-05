@@ -106,8 +106,8 @@ def transcribe_diarisation(filepath,
         pass
 
     # Declare victory
-    return (f'Finished transcription of: {filepath}.\
-            \nFind it on your Desktop.', 1)
+    return (f'Finished transcription of: {filename}.\
+            \nFind it on the same folder as your audio.', 1)
 
 
 # ---------------------
