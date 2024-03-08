@@ -6,7 +6,7 @@ Interviews, focus groups, statements, and other oral stories can hold biometric 
 
 If necessary consents, safeguards, and a trusted provider are in place, you might not need LOKAL. Otherwise, consider using LOKAL. 
 
-LOKAL runs locally[^1] on your computer. It can avoid you the need to send audios out.[^2]
+LOKAL runs locally on your computer.[^1] It can avoid you the need to send audios out.
 
 ## Installation (no coding required)
 If you want to save time, use the standalone version of LOKAL.
@@ -80,10 +80,16 @@ LOKAL's limitations include but are not limited to:
 * The transcription models can struggle with names, places, acronyms, and potentially, accents. Users must not use outputs without editing them.
 * The transcription models can struggle with conversations taking place in different languages – an idea is to do multiple runs with different language selections and then join the results.
 
-## Having troubles?
-We made LOKAL as easy to install and use as possible. 
+## Maximising privacy
+LOKAL is not a guarantee of privacy. As per the license terms, you agree the software is offered with no guarantees whatsoever. 
 
-That said, if you're really, really stuck, get in touch: hello@polyzentrik.com. 
+That said, LOKAL can help you maximise privacy in several ways:
+* LOKAL avoids you the need to send audios to third-party service providers. Not to say you should never use said services. There is a time and place for everything. Sometimes, however, keeping things LOKAL might be a good idea, especially if dealing with sensitive or easily identifiable audios.
+* LOKAL allows you to run transcriptions offline. There is a need to run a few mock transcriptions while online to trigger the download of models. After your chosen models have downloaded, however, you can disconnect from the Internet and everything should works just fine.
+* If you need or want maximal privacy, you can also copy LOKAL's installation (LOKAL installs to *'~/<-username->/AppData/Local/Programs/LOKAL'*) to an island computer **after** triggering the download of models.
+
+## Having troubles?
+We made LOKAL as easy to install and use as possible. That said, if you're really, really stuck, get in touch: hello@polyzentrik.com. 
 
 We won't charge you for a quick consultation.
 
@@ -125,5 +131,3 @@ You can also use LOKAL as a pure Python app. Assuming you have Python (3.11.0) i
 **Footnotes**
 
 [^1]: An Internet connection is needed for initial model download. The first time you choose a model, the model downloads. After, it is possible to perform transcriptions offline. Resetting models is possible from within LOKAL, which deletes all models in memory and forces a re-download next time a model is used.
-
-[^2]: As per the license, no guarantees are offered. This includes privacy. The developer is reasonably convinced that LOKAL reduces privacy risks, but related guarantees are beyond what is currently possible. If you need to maximise privacy, run a few mock transcriptions on a computer connected to the Internet to trigger the download of any necessary models, then copy LOKAL's installation to an offline computer and run transcriptions there without connecting that computer to the Internet, ever. If you go this way, it may be worth remembering that LOKAL's standalone distribution installs to *'~/<-username->/AppData/Local/Programs/LOKAL'*, whereas the Python distribution installs to wherever you choose to save it.
