@@ -45,8 +45,7 @@ def delete_LOKAL_temp():
 # ---------------------
 # FUNCTIONS USED BY SEVERAL FILES
 # ...
-# ---------------------
-from scripts.utils import more_magic
+
 
 # AUDIO SPLITTING FUNCTION
 # Used by segmentation and diarisation scripts
@@ -100,23 +99,8 @@ def split_audio(filepath, filename, path_to_temp, approach):
     # Return the speaker chunks for later usage
     return CHUNKS
 
-# RANDOM CHECKS
-def checker():
-    from scripts.assist import resource_path
-    license = open(resource_path('utils/license.txt'), 'r').read()
-    tries = len(open(resource_path('utils/try.txt'), 'r').read()) + 1
-    if len(license) > 0:
-        result = license
-    elif tries <= 5:
-        result = 'free trial'
-    else:
-        result = 'no license'
-    return result
 
 # TRANSCRIPTION ON A LOOP
-def magic():
-    return more_magic()
-
 # Used by segmentation and diarisation scripts
 
 # Standard Whisper

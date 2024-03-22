@@ -19,6 +19,7 @@ from scripts.assist import resource_path, split_audio,\
     run_whisper_on_loop, better_together, write_out,\
     run_faster_whisper_on_loop
 
+
 # ---------------------
 # MAIN TRANSCRIPTION FLOW
 # ...
