@@ -3,7 +3,7 @@
 v1. Jan 2024.
 @author: Dr J. / Polyzentrik Tmi.
 
-Save for a glorious class to enable real-time updates,
+Except for a glorious class to enable real-time updates,
 LOKAL sticks to a functional programming paradigm.
 Any classes must be justified exceptionally well.
 
@@ -29,9 +29,8 @@ from ttkbootstrap.scrolled import ScrolledFrame
 
 from contextlib import redirect_stdout, redirect_stderr
 
-from scripts.assist import resource_path, find_key_paths, delete_LOKAL_temp
-from scripts.utils import LANGUAGES
-
+from scripts.assist import resource_path, find_key_paths, magic, delete_LOKAL_temp
+from scripts.utils import LANGUAGES, check_license, log_free_run
 
 # ---------------------
 # TKINTER BOOTSTRAP APP
@@ -97,17 +96,26 @@ def app():
     run_frame.pack(fill=X)
 
     # UPPER FRAME (HEADER & MAIN SETTINGS)
-    # Dark/light mode
-    drk_lgt_var = tb.IntVar()
-    global drk_lgt_toggle
-    drk_lgt_toggle = tb.Checkbutton(top_frame,
-                                    bootstyle='light, round-toggle',
-                                    text='☀',
-                                    variable=drk_lgt_var,
-                                    onvalue=1,
-                                    offvalue=0,
-                                    command=toggle_mode)
-    drk_lgt_toggle.pack(side=RIGHT, anchor='n')
+    # View modes
+    themes = ['cyborg', 'darkly', 'vapor', 'minty', 'yeti', 'journal']
+
+    license_status, call_to_action = check_license()
+    if license_status == magic():
+        global my_theme
+        my_theme = tb.StringVar()
+        for theme in themes:
+            radio_button = tb.Radiobutton(top_frame,
+                        variable=my_theme,
+                        value= theme,
+                        style='custom.TRadiobutton',
+                        command=toggle_mode)
+            radio_button.pack(side=RIGHT, anchor='n', pady=3)
+    else:
+        lbl_subtitle = tb.Label(top_frame,
+                                bootstyle='danger',
+                                text='COLOR PALETTE DISABLED',
+                                font='impact 12')
+        lbl_subtitle.pack(side=RIGHT, anchor='n', pady=3, padx=7)
 
     # Header
     lbl_title = tb.Label(title_frame,
@@ -285,23 +293,49 @@ def app():
     global btn_run
     btn_run = tb.Button(run_frame, text='Run transcription',
                         command=run,
-                        bootstyle='dark ')
+                        bootstyle='dark')
     btn_run.pack(fill=X, anchor='w')
 
-    global btn_pay
-    btn_pay = tb.Button(run_frame, text='HELP US HELP',
-                        bootstyle='dark, outline')
-    btn_pay.pack(fill=X, pady=[3, 0], anchor='w')
-    btn_pay.bind('<Button-1>',
-                 lambda e: webbrowser.open('https://www.polyzentrik.com/help-us-help/'))
+    if license_status != magic():
+        global btn_pay
+        btn_pay = tb.Button(run_frame,
+                            text=call_to_action,
+                            bootstyle='dark, outline')
+        btn_pay.pack(fill=X, pady=[3, 0], anchor='w')
+        btn_pay.bind('<Button-1>', pop_license)
 
-    lbl_credits = tb.Label(run_frame, text='Credits',
+    lbl_license = tb.Label(run_frame,
+                           text='Activation',
+                           font='Helvetica 8',
+                           cursor='hand2')
+    lbl_license.pack(side=LEFT, pady=3)
+    lbl_license.bind('<Button-1>', pop_license)
+
+    tb.Label(run_frame, text='|',
+             font='Helvetica 8',
+             cursor='hand2').pack(side=LEFT, pady=3)
+
+    lbl_services = tb.Label(run_frame,
+                            text='Corporate services',
+                            font='Helvetica 8',
+                            cursor='hand2')
+    lbl_services.pack(side=LEFT, pady=3)
+    lbl_services.bind('<Button-1>',
+                      lambda e: webbrowser.open('https://www.polyzentrik.com/services'))
+    
+    tb.Label(run_frame, text='|',
+             font='Helvetica 8',
+             cursor='hand2').pack(side=LEFT, pady=3)
+
+    lbl_credits = tb.Label(run_frame,
+                           text='Credits',
                            font='Helvetica 8',
                            cursor='hand2')
     lbl_credits.pack(side=LEFT, pady=3)
     lbl_credits.bind('<Button-1>', pop_credits)
 
-    lbl_reset = tb.Label(run_frame, text='RESET MODELS',
+    lbl_reset = tb.Label(run_frame,
+                         text='RESET MODELS',
                          font='Helvetica 8',
                          cursor='hand2')
     lbl_reset.pack(side=RIGHT, pady=3)
@@ -433,6 +467,7 @@ def run_transcription():
 
                     # Check timer and pop message if transcription succeeds
                     if done == 1:
+                        log_free_run()
                         end_time = time.time()
                         execution_time = (end_time - start_time)
                         mm, ss = divmod(execution_time, 60)
@@ -627,7 +662,8 @@ def pop_terms(e):
     ''' F(x) launches a new window containing terms and conditions.
     '''  # Obviously, could be merged, too. Some day.
     apache_terms = open(resource_path('utils/apache_terms.txt'), 'r').read()
-    terms_root = tb.Window()
+    terms_root = tb.Toplevel()
+    terms_root.iconbitmap(resource_path('images/icon.ico'))
     terms_root.title('Terms & Conditions')
     terms_box = tb.ScrolledText(terms_root)
     terms_box.pack()
@@ -639,12 +675,59 @@ def pop_credits(e):
     ''' F(x) launches a new window containing credits.
     '''  # Obviously, could be merged, too. Some day.
     credits = open(resource_path('utils/credits.txt'), 'r').read()
-    credits_root = tb.Window()
+    credits_root = tb.Toplevel()
+    credits_root.iconbitmap(resource_path('images/icon.ico'))
     credits_root.title('Credits')
     credits_box = tb.ScrolledText(credits_root)
     credits_box.pack()
     credits_box.insert(END, credits)
     credits_box.configure(state='disabled')
+
+
+def pop_license(e):
+    ''' F(x) launches a new window containing credits.
+    '''  # Obviously, could be merged, too. Some day.
+
+    help_us_help = "Get a code to activate all visual features and help us develop LOKAL and other open resources further by making a small voluntary payment."
+    enter_invoice = 'After a payment is made, you will get an invoice. Enter your invoice number below to activate all visual features.'
+
+    global license_root
+    license_root = tb.Toplevel(title='Activation')
+    license_root.iconbitmap(resource_path('images/icon.ico'))
+
+    tb.Label(license_root,
+        text='Help us help',
+        justify='left',
+        font='Helvetica 24 bold').pack(fill=X, padx=7, pady=[14,3])
+    
+    tb.Label(license_root,
+             wraplength=400,
+             text=help_us_help,
+             justify='left').pack(fill=X, padx=7, pady=[0,3])
+
+    license_get = tb.Button(license_root, 
+                            bootstyle='success',
+                            text='MAKE VOLUNTARY PAYMENT')
+    license_get.pack(anchor='w', padx=7, pady=[0,7])
+    license_get.bind('<Button-1>', lambda e: webbrowser.open('https://www.polyzentrik.com/help-us-help/'))
+
+    tb.Label(license_root,
+        text='Activation',
+        justify='left',
+        font='Helvetica 24 bold').pack(fill=X, padx=7, pady=[14,3])
+    
+    tb.Label(license_root,
+             wraplength=400,
+             text=enter_invoice,
+             justify='left').pack(fill=X, padx=7, pady=[0,3])
+    
+    global license_box
+    license_box = tb.Entry(license_root, bootstyle='success')
+    license_box.pack(side=LEFT, padx=[7,0], pady=[3,14], anchor='e')
+
+    license_save = tb.Button(license_root, bootstyle='dark', text='ACTIVATE')
+    license_save.pack(side=LEFT, pady=[3,14], anchor='e')
+    license_save.bind('<Button-1>', write_license)
 
 
 def reset_models(e):
@@ -664,6 +747,17 @@ def reset_models(e):
                             os.rmdir(f'./models/{i}/{j}')
                         except:
                             os.remove(f'./models/{i}/{j}')
+
+
+def write_license(e):
+    from scripts.boring import encrypt_and_write
+    try:
+        encrypt_and_write(license_box.get())
+        license_root.destroy()
+        popbox = messagebox.showwarning('showwarning', 'Please restart LOKAL.')
+    except:
+        print('ERROR: License not saved.')
+
 
 
 def kill_everything():
@@ -734,46 +828,77 @@ def toggle_mode():
     style = app.style
 
     # Establish if app is launching and get current from file
-    launch_flag, not_default_view = open(
+    switch_flag, launch_style = open(
         resource_path('utils/view_mode.txt'), 'r').read().split(',')
-
-    # Set current to opposite
-    if launch_flag == '1':
-        current_style = style.theme.name
-    else:  # If first paint, set current to opposite of default
-        current_style = not_default_view
-        with open(resource_path('utils/view_mode.txt'), 'w')as f:
-            f.write('1,' + not_default_view)
-            f.close()
-
-    # Switch from current to default or chosen mode
-    if current_style == 'journal':
-        style.theme_use('darkly')
+    
+    license_status = check_license()[0]
+    if license_status == 0:
+        style.theme_use('vapor')
+        #spinbox_view_select.set('COLORS DISABLED')
         btn_audio_select.config(bootstyle='light')
-        console_frame.config(bg='black', foreground='white')
-        btn_run.config(bootstyle='light, outline')
-        btn_pay.config(bootstyle='light')
-        hps_param1.configure(bootstyle='success')
-        hps_param2.configure(bootstyle='success')
-        hps_param3.configure(bootstyle='success')
-        hps_param4.configure(bootstyle='success')
+        console_frame.config(bg='yellow', foreground='white')
+        btn_audio_select.config(bootstyle='success')
+        btn_run.config(bootstyle='warning, outline')
+        btn_pay.config(bootstyle='secondary')
+    elif license_status == 1:
+        pass
+        #spinbox_view_select.set('COLORS DISABLED')
+    elif license_status == 2:
+        # Set target style
+        if switch_flag == '0':  # If just opened, use saved style
+            target_style = launch_style
+            my_theme.set(target_style)
+            #spinbox_view_select.set(target_style.upper())
+        else:  # Else, user is switching, use value from GUI
+            target_style = my_theme.get()
+            #target_style = spinbox_view_select.get().lower()
+
+        # Switch from current to default or chosen mode
+        if target_style == 'vapor' or target_style == 'darkly' or target_style == 'cyborg':
+            style.theme_use(target_style)
+            hps_param1.configure(bootstyle='success')
+            hps_param2.configure(bootstyle='success')
+            hps_param3.configure(bootstyle='success')
+            hps_param4.configure(bootstyle='success')
+            if target_style == 'cyborg':
+                btn_audio_select.config(bootstyle='light, outline')
+                console_frame.config(bg='aquamarine', foreground='black')
+                btn_run.config(bootstyle='light, outline')
+                #btn_pay.config(bootstyle='light')
+            elif target_style == 'vapor': 
+                btn_audio_select.config(bootstyle='light')
+                console_frame.config(bg='black', foreground='white')
+                btn_run.config(bootstyle='light')
+                #btn_pay.config(bootstyle='light')
+            else:
+                btn_audio_select.config(bootstyle='secondary')
+                console_frame.config(bg='black', foreground='white')
+                btn_run.config(bootstyle='secondary')
+        else:
+            style.theme_use(target_style)
+            hps_param1.configure(bootstyle='dark')
+            hps_param2.configure(bootstyle='dark')
+            hps_param3.configure(bootstyle='dark')
+            hps_param4.configure(bootstyle='dark')
+            if target_style == 'journal':
+                btn_audio_select.config(bootstyle='dark, outline')
+                console_frame.config(bg='#222', foreground='white')
+                btn_run.config(bootstyle='dark')
+                #btn_pay.config(bootstyle='dark, outline')
+            elif target_style == 'yeti':
+                btn_audio_select.config(bootstyle='primary')
+                console_frame.config(bg='yellow', foreground='black')
+                btn_run.config(bootstyle='primary')
+                #btn_pay.config(bootstyle='primary')
+            else:
+                btn_audio_select.config(bootstyle='primary')
+                console_frame.config(bg='pink', foreground='black')
+                btn_run.config(bootstyle='primary')
+                #btn_pay.config(bootstyle='primary')
+        
         # Update the utils file that keeps track of this view mode defaults
         with open(resource_path('utils/view_mode.txt'), 'w')as f:
-            f.write('1,' + 'journal')
-            f.close()
-    else:
-        style.theme_use('journal')
-        btn_audio_select.config(bootstyle='dark, outline')
-        console_frame.config(bg='#222', foreground='white')
-        btn_run.config(bootstyle='dark')
-        btn_pay.config(bootstyle='dark, outline')
-        hps_param1.configure(bootstyle='dark')
-        hps_param2.configure(bootstyle='dark')
-        hps_param3.configure(bootstyle='dark')
-        hps_param4.configure(bootstyle='dark')
-        # Update the utils file that keeps track of this view mode defaults
-        with open(resource_path('utils/view_mode.txt'), 'w')as f:
-            f.write('1,' + 'darkly')
+            f.write('1,' + target_style)
             f.close()
 
 
