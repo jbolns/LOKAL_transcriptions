@@ -1,3 +1,42 @@
+# ---------------------
+# LICENSE CHECKs
+# ...
+def check_license():
+    import config
+    from scripts.utils import decode_license
+    
+    if config.license_status == 'no license':
+        status = 0
+        message = 'MAKE LOKAL PRETTY AGAIN'
+    elif config.license_status == 'free trial':
+        status = 1
+        message = 'ENABLE COLOR THEMES'
+    elif decode_license(config.license_status):
+        status = 2
+        message = 'HELP US HELP'
+    else:
+        status = 0
+        message = 'MAKE LOKAL PRETTY AGAIN'
+    return status, message
+
+
+def log_free_run():
+    import config
+    from scripts.assist import resource_path
+
+    if config.license_status == 'free trial':
+        tries = len(open(resource_path('utils/try.txt'), 'r').read()) + 1
+        if tries <= 5:
+            with open(resource_path('utils/try.txt'), 'w')as f:
+                f.write('.' * tries)
+                f.close()
+        else:
+            config.license_status = 'due'
+
+# ---------------------
+# AUDIO CONVERSION
+# Needed if main audio is not in .wav format
+# ...
 def convert_to_wav(filepath, filename):
     from pydub import AudioSegment
 
@@ -15,6 +54,8 @@ def convert_to_wav(filepath, filename):
     except:
         return 0
 
+def more_magic():
+    return 2
 
 def delete_converted_wav(filepath):
     if filepath.endswith('wav'):
@@ -29,6 +70,22 @@ def delete_converted_wav(filepath):
                   \nNormally, the converted version is deleted automatically, but there were errors with deletion.\
                   \nCheck if the file is still there and delete manually if desired.\n'
 
+def decode_license(license):
+    from cryptography.fernet import Fernet
+    from scripts.assist import resource_path
+    
+    key = open(resource_path('utils/key.txt'), 'r').read()
+    f = Fernet(key)
+    real_key = f.decrypt(license.encode()).decode()
+
+    if '-' not in real_key:
+        return 0
+    else:
+        p1, p2 = real_key.split('-')
+        if str(p1).isalpha() and str(p2).isnumeric():
+            return 1
+        else:
+            return 0
 
 LANGUAGES = {
     "english": "en",
