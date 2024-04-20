@@ -12,6 +12,9 @@ LOKAL runs locally on your computer.[^1] It can avoid you the need to send audio
 
 ## Installation
 
+### Pre-requisites
+**FFmpeg.** Some features require [FFmpeg](https://www.ffmpeg.org/) to be installed on the computer you're using LOKAL – installation guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). If you absolutely cannot install FFmpeg, you may still be able to use LOKAL by sticking to audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
+
 ### No-code installation
 If you want to save time, use the standalone version of LOKAL.
 
@@ -22,11 +25,6 @@ If you want to save time, use the standalone version of LOKAL.
 
 ### ALTERNATIVE Python installation
 You can also use LOKAL as a pure Python app. Installation and usage are much harder, but you get more freedom and can tinker with the code. See instructions at the end of this README.
-
-## Recommended add-on
-While LOKAL can work without it, some features require [FFmpeg](https://www.ffmpeg.org/) – installation guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
-* **Audio conversion.** Audios in *.wav* format work even without FFmpeg. That said, FFmpeg is required to transcribe audios in formats other than *.wav*. 
-* **OpenAI's Whisper.** Systran's 'Faster Whisper' work without FFmpeg. That said, FFmpeg is required to use the original OpenAI's 'Whisper' models.
 
 ## Instructions to use LOKAL
 LOKAL offers users a number of choices. It's a long list, but once you open the app you'll see thing are fairly intuitive.
