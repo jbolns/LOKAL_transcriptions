@@ -32,6 +32,7 @@ from contextlib import redirect_stdout, redirect_stderr
 from scripts.assist import resource_path, find_key_paths, magic, delete_LOKAL_temp
 from scripts.utils import LANGUAGES, check_license, log_free_run
 
+
 # ---------------------
 # TKINTER BOOTSTRAP APP
 # ...
@@ -42,12 +43,15 @@ def app():
 
     # SETTINGS AND HYPER-PARAMETERS DICTIONARIES
     global settings
-    settings = {'filepath': '',
+    settings = {'path_to_audio': '',
+                'path_to_prompt': '',
                 'family': 'openai_whisper',
                 'model': 'tiny',
-                'type': 'simple',
+                'approach': 'simple',
                 'language': 'AUTO',
-                'terms': 0}
+                'timestamps_on': False,
+                'gpu_on': '0',
+                'tcs_ok': 0}
 
     # ROOT WINDOW & ROOT CONFIGS
     global app
@@ -86,8 +90,8 @@ def app():
     title_frame = tb.Frame(left_frame)
     title_frame.pack(fill=X)
 
-    configs_frame = tb.Frame(right_frame)
-    configs_frame.pack(fill=X)
+    config_frame = tb.Frame(right_frame)
+    config_frame.pack(fill=X)
 
     params_frame = tb.Frame(lower_frame)
     params_frame.pack(pady=(14, 14), fill=X)
@@ -95,7 +99,7 @@ def app():
     run_frame = tb.Frame(lower_frame)
     run_frame.pack(fill=X)
 
-    # UPPER FRAME (HEADER & MAIN SETTINGS)
+    # UPPER FRAME FOR HEADER & MAIN SETTINGS
     # View modes
     themes = ['cyborg', 'darkly', 'vapor', 'minty', 'yeti', 'journal']
 
@@ -105,126 +109,158 @@ def app():
         my_theme = tb.StringVar()
         for theme in themes:
             radio_button = tb.Radiobutton(top_frame,
-                        variable=my_theme,
-                        value= theme,
-                        style='custom.TRadiobutton',
-                        command=toggle_mode)
+                                          variable=my_theme,
+                                          value= theme,
+                                          style='custom.TRadiobutton',
+                                          command=toggle_mode)
             radio_button.pack(side=RIGHT, anchor='n', pady=3)
     else:
-        lbl_subtitle = tb.Label(top_frame,
-                                bootstyle='danger',
-                                text='COLOR PALETTE DISABLED',
-                                font='impact 12')
-        lbl_subtitle.pack(side=RIGHT, anchor='n', pady=3, padx=7)
+        lbl_palette = tb.Label(top_frame,
+                               bootstyle='danger',
+                               text='COLOR PALETTE DISABLED',
+                               font='impact 12')
+        lbl_palette.pack(side=RIGHT, anchor='n', pady=3, padx=7)
 
     # Header
-    lbl_title = tb.Label(title_frame,
-                         text='LOKAL',
-                         font='Helvetica 48 bold')
-    lbl_title.pack(fill=X, expand=True)
+    title = tb.Label(title_frame, text='LOKAL', font='Helvetica 48 bold')
+    title.pack(fill=X, expand=True)
 
-    lbl_subtitle = tb.Label(title_frame,
-                            text='Local AI transcriptions',
-                            font='Courier 16 bold')
-    lbl_subtitle.pack(fill=X, expand=True)
+    subtitle = tb.Label(title_frame, text='Local AI transcriptions', font='Courier 16 bold')
+    subtitle.pack(fill=X, expand=True)
 
-    lbl_company = tb.Label(title_frame,
-                           text='www.polyzentrik.com',
-                           bootstyle='info',
-                           font='Courier 10 bold underline',
-                           cursor='hand2')
-    lbl_company.pack(expand=True, anchor='e')
-    lbl_company.bind('<Button-1>',
-                     lambda e: webbrowser.open('https://www.polyzentrik.com/'))
+    company = tb.Label(title_frame,
+                       text='www.polyzentrik.com',
+                       bootstyle='info',
+                       font='Courier 10 bold underline',
+                       cursor='hand2')
+    company.pack(expand=True, anchor='e')
+    company.bind('<Button-1>', lambda e: webbrowser.open('https://www.polyzentrik.com/'))
 
-    global btn_audio_select
-    btn_audio_select = tb.Button(title_frame,
-                                 text='SELECT AUDIO',
-                                 command=browse_for_file,
-                                 bootstyle='dark, outline')
-    btn_audio_select.pack(fill=X, pady=(21, 5), expand=True)
+    # Audio selection
+    global audio_select
+    audio_select = tb.Button(title_frame,
+                             text='SELECT AUDIO',
+                             command=lambda: browse_for_file('audio'),
+                             bootstyle='dark, outline')
+    audio_select.pack(fill=X, pady=(21, 1), expand=True)
 
-    global terms
-    terms = tb.IntVar()
-    check = tb.Checkbutton(title_frame,
-                           text='I accept all ',
-                           bootstyle='success',
-                           variable=terms,
-                           onvalue=1,
-                           offvalue=0,
-                           command=agree)
-    check.pack(side=LEFT)
+    misc_frame = tb.Frame(title_frame)
+    misc_frame.pack(fill=X, expand=True, pady=3, padx=(0, 28))
 
-    lbl_company = tb.Label(title_frame,
-                           text='terms & conditions',
-                           font='Helvetica 8 underline',
-                           cursor='hand2')
-    lbl_company.pack(side=LEFT)
-    lbl_company.bind('<Button-1>', pop_terms)
+    # Selection for computing type (CPU or GPU)
+    global gpu_on
+    gpu_on = tb.BooleanVar()
+    gpu_btn = tb.Checkbutton(misc_frame,
+                             text='GPU',
+                             bootstyle='success-square-toggle',
+                             variable=gpu_on,
+                             onvalue=True,
+                             offvalue=False,
+                             command=key_settings)
+    gpu_btn.pack(side=LEFT, padx=(0,3))
 
-    # Main settings
-    lbl_family_select = tb.Label(configs_frame,
-                                 text='MODEL',
-                                 font='Helvetica 8 bold')
-    lbl_family_select.pack(anchor='w')
+    # Optional timestamps
+    global stamps_on
+    stamps_on = tb.BooleanVar()
+    stamps_btn = tb.Checkbutton(misc_frame,
+                                text='Timestamps',
+                                bootstyle='success-square-toggle',
+                                variable=stamps_on,
+                                onvalue=True,
+                                offvalue=False,
+                                command=key_settings)
+    stamps_btn.pack(side=LEFT, padx=(0,3))
+
+    global tcs_ok
+    tcs_ok = tb.BooleanVar()
+    tcs_btn = tb.Checkbutton(title_frame,
+                             text='Accept all ',
+                             bootstyle='success',
+                             variable=tcs_ok,
+                             onvalue=True,
+                             offvalue=False,
+                             command=key_settings)
+    tcs_btn.pack(side=LEFT)
+
+    tcs_extension = tb.Label(title_frame,
+                             text='terms & conditions',
+                             font='Helvetica 8 underline',
+                             cursor='hand2')
+    tcs_extension.pack(side=LEFT)
+    tcs_extension.bind('<Button-1>', pop_terms)
+
+    # KEY HYPER-PARAMETERS SIDEBAR
+    # Dropdown to select desired model to transcription
+    tb.Label(config_frame, text='MODEL', font='Helvetica 8 bold').pack(anchor='w')
 
     families = ['OpenAI: Whisper', 'Systran: Faster Whisper']
-
+    
     global whisper
-    whisper = ['tiny', 'base', 'small', 'medium', 'large']
     global fs_whisper
+    whisper = ['tiny', 'base', 'small', 'medium', 'large']
     fs_whisper = ['tiny', 'base', 'small', 'medium', 'large']
 
-    global dropdown_family_select
-    dropdown_family_select = tb.Combobox(configs_frame, values=families)
-    dropdown_family_select.pack()
-    dropdown_family_select.current(0)
-    dropdown_family_select.bind('<<ComboboxSelected>>', family_choice)
+    global family_select
+    family_select = tb.Combobox(config_frame, values=families)
+    family_select.pack()
+    family_select.current(0)
+    family_select.bind('<<ComboboxSelected>>', family_choice)
 
-    global dropdown_model_select
-    dropdown_model_select = tb.Combobox(configs_frame,
-                                        values=[i.capitalize()
-                                                for i in whisper])
-    dropdown_model_select.pack()
-    dropdown_model_select.current(0)
-    dropdown_model_select.bind('<<ComboboxSelected>>', model_choice)
+    global model_select
+    model_select = tb.Combobox(config_frame, values=[i.capitalize() for i in whisper])
+    model_select.pack()
+    model_select.current(0)
+    model_select.bind('<<ComboboxSelected>>', model_language_settings)
 
-    lbl_type_select = tb.Label(configs_frame, text='APPROACH',
-                               font='Helvetica 8 bold')
-    lbl_type_select.pack(anchor='w', pady=[14, 0])
-
+    # Dropdown to select desired approach to transcription
     types = ['simple', 'segmentation', 'diarisation']
-    global dropdown_type_select
-    dropdown_type_select = tb.Combobox(configs_frame,
-                                       values=[i.capitalize()
-                                               for i in types])
-    dropdown_type_select.pack()
-    dropdown_type_select.current(0)
-    dropdown_type_select.bind('<<ComboboxSelected>>', type_choice)
+    
+    tb.Label(config_frame, text='APPROACH', font='Helvetica 8 bold').pack(anchor='w', pady=[14, 0])
+    global type_select
+    type_select = tb.Combobox(config_frame, values=[i.capitalize() for i in types])
+    type_select.pack()
+    type_select.current(0)
+    type_select.bind('<<ComboboxSelected>>', type_choice)
 
-    hps_lang_intro = tb.Label(configs_frame,
-                              text='LANGUAGE',
-                              font='Helvetica 8 bold')
-    hps_lang_intro.pack(anchor='w', pady=[14, 0])
-
+    # Dropdown to select language
     langs = ['AUTO'] + sorted(LANGUAGES.keys())
-    global dropdown_lang_select
-    dropdown_lang_select = tb.Combobox(configs_frame,
-                                       values=[i.title() for i in langs])
-    dropdown_lang_select.pack()
-    dropdown_lang_select.current(0)
-    dropdown_lang_select.bind('<<ComboboxSelected>>', language_choice)
 
-    # LOWER FRAME
-    # Optional hyper-parameters
+    tb.Label(config_frame, text='LANGUAGE', font='Helvetica 8 bold').pack(anchor='w', pady=[14, 0])
+    global lang_select
+    lang_select = tb.Combobox(config_frame, values=[i.title() for i in langs])
+    lang_select.pack()
+    lang_select.current(0)
+    lang_select.bind('<<ComboboxSelected>>', model_language_settings)
+
+    # Button to select a prompt file (available for normal Whisper)
+    global prompt_separator
+    prompt_separator = tb.Separator(config_frame)
+    prompt_separator.pack(anchor='w', fill=X, pady=[21, 14])
+    
+    global prompt_intro
+    prompt_intro = tb.Label(config_frame,
+                            text='OPTIONAL PROMPT',
+                            font='Helvetica 8 bold')
+    prompt_intro.pack(anchor='w', pady=0)
+
+    global prompt_select
+    prompt_select = tb.Button(config_frame,
+                              text='> Upload prompt',
+                              command=lambda: browse_for_file('prompt'))
+    prompt_select.pack(fill=X, expand=True, anchor='w')
+
+    # OPTIONAL HYPER-PARAMETERS AREA
+    # Main wrapper frame
     global hps_frame
     hps_frame = tb.LabelFrame(params_frame, border=0)
     hps_frame.pack(pady=[0, 7], anchor='w', fill=X, expand=True)
     hps_frame.bind("<Configure>", resize)
 
+    # Segmentation wrapper frame
     global segmentation_params
     segmentation_params = tb.Frame(hps_frame)
 
+    # Segmentation hyper-parameters
     hps_hdr = tb.Label(segmentation_params,
                        text='OPTIONAL HYPER-PARAMETERS',
                        font='Helvetica 10 bold')
@@ -248,9 +284,11 @@ def app():
                           subtext='Ignore short pauses', textright='ms')
     hps_param2.pack(side=LEFT)
 
+    # Segmentation wrapper frame
     global diarisation_params
     diarisation_params = tb.Frame(hps_frame)
-
+    
+    # Diarisation hyper-parameters
     hps_hdr = tb.Label(diarisation_params,
                        text='ADDITIONAL HYPER-PARAMETERS AVAILABLE',
                        font='Helvetica 10 bold')
@@ -278,18 +316,18 @@ def app():
     hps_param4.set('AUTO')
     hps_param4.pack()
 
-    # Notifications
-    global notifications_frame
-    notifications_frame = tb.LabelFrame(params_frame, border=0)
-    notifications_frame.pack(fill=X, expand=TRUE, padx=48)
-    notifications_frame.bind("<Configure>", resize)
+    # NOTIFICATIONS AREA
+    global notify_frame
+    notify_frame = tb.LabelFrame(params_frame, border=0)
+    notify_frame.pack(fill=X, expand=TRUE, padx=48)
+    notify_frame.bind("<Configure>", resize)
 
     global console_frame
-    console_frame = tb.ScrolledText(notifications_frame, height=10, wrap=WORD)
+    console_frame = tb.ScrolledText(notify_frame, height=10, wrap=WORD)
     console_frame.config(bg='black', foreground='white')
     console_frame.pack(fill=X, expand=TRUE)
 
-    # Run button (w. terms & conditions)
+    # FINAL RUN AREA
     global btn_run
     btn_run = tb.Button(run_frame, text='Run transcription',
                         command=run,
@@ -364,20 +402,19 @@ def run():
         pass
 
     # Check audio is selected and T&Cs are agreed, proceed if so
-    if settings['filepath'] == '':
+    if settings['path_to_audio'] == '':
         logger('\n\n...\nYou have not selected an audio file. You need to select an audio for a transcription to be possible.')
         popbox = messagebox.showwarning('showwarning', 'You have not selected an audio file. It is therefore impossible to proceed.')
-    elif settings['terms'] == 0:
+    elif settings['tcs_ok'] == 0:
         logger('\n\n...\nYou have not accepted the terms and conditions. You need to accept the terms and conditions for a transcription to be possible.')
         popbox = messagebox.showwarning('showwarning', 'You have not accepted the terms and conditions. It is therefore impossible to proceed.')
     else:
         hps_frame.forget()
-        notifications_frame.pack(fill=X, expand=TRUE, padx=48)
+        notify_frame.pack(fill=X, expand=TRUE, padx=48)
         console_frame.delete('1.0', END)
         app.update()
         try:
-            transcription_thread = threading.Thread(target=run_transcription,
-                                                    daemon=True)
+            transcription_thread = threading.Thread(target=run_transcription, daemon=True)
             transcription_thread.start()
         except Exception as e:
             logger(f'...\nTranscription thread has failed. Error is... {e}')
@@ -391,26 +428,25 @@ def run_transcription():
     start_time = time.time()
 
     # Get settings from app and define key variables
-    path, family, model, approach, language, agree = list(settings.values())
-    name = path.rsplit('/')[-1].rsplit('.')[0]
+    path_to_audio = settings['path_to_audio']
+    filename = path_to_audio.rsplit('/')[-1].rsplit('.')[0]
     done = 0  # -> to 1 if transcription succeeds
 
     # Check if file needs conversion, convert if so
     conversion = 0
-    if not path.endswith('.wav'):
+    if not path_to_audio.endswith('.wav'):
         from scripts.utils import convert_to_wav
         logger('...\nCONVERTING AUDIO TO .WAV FORMAT\
-              \nLOKAL will temporarily save a .wav version of your audio to the same folder as the original audio.\
+              \nLOKAL will save a temp audio file to the same folder as the original audio.\
               \nTo avoid this step, use .wav audios.')
-        conversion = convert_to_wav(path, name)
+        conversion = convert_to_wav(path_to_audio, filename)
         if conversion == 1:
-            new_filepath = path.rpartition('/')[0] + '/' + name + '-wavcopyforLOKALtranscription' + '.wav'
-            path = new_filepath
+            path_to_audio = path_to_audio.rpartition('/')[0] + '/' + filename + '-wavcopyforLOKALtranscription' + '.wav'
             logger('\n\n...\nAudio conversion succesful.\n\n')
         else:
             logger('\n\n...\nAudio conversion failed. To perform a transcription, save the audio in .wav format and try transcribing the .wav version.\n\n')
 
-    if path.endswith('.wav'):
+    if path_to_audio.endswith('.wav'):
         # Register context f(x)'s to redirect stdout and stderr to main app window
         f = WriteProcessor()
         g = WriteProcessor()
@@ -420,30 +456,27 @@ def run_transcription():
             with redirect_stdout(g):
                 # Launch transcription
                 try:
-                    if agree != 1:  # Reject transcription T&Cs not agreed
+                    if settings['tcs_ok'] != True:  # Reject transcription T&Cs not agreed
                         print('...\nCannot proceed to transcription unless user agrees to terms and conditions.')
-                    elif agree == 1:  # Proceed if user agreed to T&Cs
-
-                        # If all goes well, mostly everything happens in this try
+                    else:  # Proceed if user agreed to T&Cs
                         try:
-                            print('...\nSTARTING TRANSCRIPTION.\
-                                \nRemember, LOKAL is made for comfort, not speed.\
-                                \nBe patient!')
-                            if approach == 'simple':
-                                from scripts.simple import transcribe_simple
-                                result, done = transcribe_simple(path, name, family, model, language)
-                            if approach == 'segmentation':
-                                from scripts.segmentation\
-                                    import transcribe_segmentation
-                                HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
-                                    'min_duration_off': hps_param2.amountusedvar.get()/1000}
-                                result, done = transcribe_segmentation(path, name, family, model, language, HPs)
-                            if approach == 'diarisation':
-                                from scripts.diarisation\
-                                    import transcribe_diarisation
-                                HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
+                            print('...\nSTARTING TRANSCRIPTION...')
+                            
+                            if settings['approach'] != 'simple':
+                                from scripts.lokal_transcribe import transcribe_complex
+                                
+                                if settings['approach'] == 'segmentation':
+                                    HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
+                                        'min_duration_off': hps_param2.amountusedvar.get()/1000}
+                                else:
+                                    HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
                                     'speaker_num': hps_param4.get()}
-                                result, done = transcribe_diarisation(path, name, family, model, language, HPs)
+                                
+                                result, done = transcribe_complex(settings, filename, HPs)
+                            
+                            else:
+                                from scripts.lokal_transcribe import transcribe_simple
+                                result, done = transcribe_simple(settings, filename)
 
                         # Error handling sucks, but idea is to delete temp folders
                         except Exception as e:
@@ -456,13 +489,9 @@ def run_transcription():
                                     \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
                                     \nIf present, delete "LOKAL_temp" to avoid future errors.')
 
-                    # Exception in theory never triggered
-                    else:
-                        print('...\nUnknown error.')
-
                     if conversion == 1:
                         from scripts.utils import delete_converted_wav
-                        deletion_msg = delete_converted_wav(path)
+                        deletion_msg = delete_converted_wav(path_to_audio)
                         logger(deletion_msg)
 
                     # Check timer and pop message if transcription succeeds
@@ -514,81 +543,99 @@ class WriteProcessor:
 # ---------------------
 # MISC TKINTER ACTIONS
 # ....
-def browse_for_file():
+def browse_for_file(type_of_file):
     ''' F(x) pops window open for user to select files.
     '''
-    path_to_open = find_key_paths()[1]
-    filetypes = (
-        ('common audio formats', ('*.wav', '*.mp3', '*.mp4', '*.m4a', '*.flac', '*.wma', '*.aac')),
-        ('all files', '*.*'))
-    audio_file = filedialog.askopenfilename(filetypes=filetypes,
-                                            initialdir=path_to_open)
-    if audio_file:
-        settings['filepath'] = audio_file
-        console_frame.delete('1.0', END)
-        logger(f'...\nPath to selected audio is: {audio_file}.\
-               \nPlease double check this is the file you want to transcribe before running the transcription.')
+    
+    if type_of_file == 'audio':
+        filetypes = (
+            ('common audio formats', ('*.wav', '*.mp3', '*.mp4', '*.m4a', '*.flac', '*.wma', '*.aac')),
+            ('all files', '*.*'))
     else:
-        settings['filepath'] = ''
+        filetypes = (
+            ('text files', ('*.txt')),
+            ('all files', '*.*'))
+
+    path_to_file = filedialog.askopenfilename(filetypes=filetypes,
+                                      initialdir=find_key_paths()[1])
+    
+    if path_to_file:
+        if type_of_file == 'audio':
+            settings['path_to_audio'] = path_to_file
+        else:
+            settings['path_to_prompt'] = path_to_file
+        
+        console_frame.delete('1.0', END)
+        logger(f'...\nPath to selected {type_of_file} is: {path_to_file}.')
+    else:
+        if type_of_file == 'audio':
+            settings['path_to_audio'] = ''
+        else:
+            settings['path_to_prompt'] = ''
 
 
 def family_choice(e):
     ''' F(x) handles changes in model family/provider selection.
     '''
-    family = dropdown_family_select.get().lower()
+    family = family_select.get().lower()
     settings['family'] = family.replace(':', '').replace(' ', '_')
     if family == 'openai: whisper':
-        dropdown_model_select.config(value=[i.capitalize()
-                                            for i in whisper])
-        dropdown_model_select.current(0)
-        settings['model'] = dropdown_model_select.get().lower()
+        prompt_separator.pack(anchor='w', fill=X, pady=[21, 14])
+        prompt_intro.pack(anchor='w', pady=0)
+        prompt_select.pack(fill=X, pady=(1, 5), expand=True)
+        model_select.config(value=[i.capitalize() for i in whisper])
+        model_select.current(0)
+        settings['model'] = model_select.get().lower()
+        
     elif family == 'systran: faster whisper':
-        dropdown_model_select.config(value=[i.capitalize()
-                                            for i in fs_whisper])
-        dropdown_model_select.current(0)
-        settings['model'] = dropdown_model_select.get().lower()
+        prompt_select.forget()
+        prompt_intro.forget()
+        prompt_separator.forget()
+        model_select.config(value=[i.capitalize() for i in fs_whisper])
+        model_select.current(0)
+        settings['model'] = model_select.get().lower()
 
 
-def agree():
-    ''' F(x) handles changes in the checkbox for agreeing to T&Cs.
-    '''  # Could be merged, but it's only a few lines and I'm lazy
-    settings['terms'] = terms.get()
+def key_settings():
+    ''' F(x) handles changes in the checkbox for
+        - T&Cs
+        - Timestamps
+        - Compute type (cpu/gpu)
+    ''' 
+    settings['tcs_ok'] = tcs_ok.get()
+    settings['timestamps_on'] = stamps_on.get()
+    settings['gpu_on'] = gpu_on.get()
 
 
-def model_choice(e):
-    ''' F(x) handles changes in model selection
-    '''  # Could be merged, but it's only a few lines and I'm lazy
-    settings['model'] = dropdown_model_select.get().lower()
-
-
-def language_choice(e):
-    ''' F(x) handles changes in language selection
-    '''  # Could be merged, but it's only a few lines and I'm lazy
-    settings['language'] = dropdown_lang_select.get().lower()
+def model_language_settings(e):
+    ''' F(x) handles changes in model or language selection
+    '''
+    settings['model'] = model_select.get().lower()
+    settings['language'] = lang_select.get().lower()
 
 
 def type_choice(e):
     ''' F(x) handles changes in approach selection and triggers
         window resize to try and keep all app in view at all times.
     '''  # Could be merged, but it's only a few lines and I'm lazy
-    type = dropdown_type_select.get()
-    settings['type'] = type.lower()
-    hparams(type.lower())
+    approach = type_select.get()
+    settings['approach'] = approach.lower()
+    hparams(approach.lower())
 
 
 def hparams(approach):
     ''' F(x) updates hyper-parameters section of main app, per approach.
     '''
     if approach == 'simple':
-        notifications_frame.pack(fill=X, expand=TRUE, padx=48)
+        notify_frame.pack(fill=X, expand=TRUE, padx=48)
         hps_frame.forget()
     elif approach == 'segmentation':
-        notifications_frame.forget()
+        notify_frame.forget()
         hps_frame.pack(pady=3, anchor='w', fill=X, expand=True)
         segmentation_params.pack(anchor='n', pady=(14, 0), expand=True)
         diarisation_params.forget()
     elif approach == 'diarisation':
-        notifications_frame.forget()
+        notify_frame.forget()
         hps_frame.pack(pady=3, anchor='w', fill=X, expand=True)
         diarisation_params.pack(anchor='n', pady=(14, 0), expand=True)
         segmentation_params.forget()
@@ -603,7 +650,6 @@ def logger(text):
         line ends up having similar words/chars as progress bar updates.
     '''
 
-    # FUN STORY
     # The "console" on the GUI is not actually a "console"
     # One needs to take and put things into it as required
 
@@ -835,9 +881,9 @@ def toggle_mode():
     if license_status == 0:
         style.theme_use('vapor')
         #spinbox_view_select.set('COLORS DISABLED')
-        btn_audio_select.config(bootstyle='light')
+        audio_select.config(bootstyle='light')
         console_frame.config(bg='yellow', foreground='white')
-        btn_audio_select.config(bootstyle='success')
+        audio_select.config(bootstyle='success')
         btn_run.config(bootstyle='warning, outline')
         btn_pay.config(bootstyle='secondary')
     elif license_status == 1:
@@ -854,24 +900,26 @@ def toggle_mode():
             #target_style = spinbox_view_select.get().lower()
 
         # Switch from current to default or chosen mode
+        s = tb.Style()
         if target_style == 'vapor' or target_style == 'darkly' or target_style == 'cyborg':
             style.theme_use(target_style)
             hps_param1.configure(bootstyle='success')
             hps_param2.configure(bootstyle='success')
             hps_param3.configure(bootstyle='success')
             hps_param4.configure(bootstyle='success')
+            s.configure('custom.TButton', anchor='w', bordercolor='gray', background='#000', foreground='white', lightcolor='gray', darkcolor='gray')
             if target_style == 'cyborg':
-                btn_audio_select.config(bootstyle='light, outline')
+                audio_select.config(bootstyle='light, outline')
                 console_frame.config(bg='aquamarine', foreground='black')
                 btn_run.config(bootstyle='light, outline')
                 #btn_pay.config(bootstyle='light')
             elif target_style == 'vapor': 
-                btn_audio_select.config(bootstyle='light')
+                audio_select.config(bootstyle='light')
                 console_frame.config(bg='black', foreground='white')
                 btn_run.config(bootstyle='light')
                 #btn_pay.config(bootstyle='light')
             else:
-                btn_audio_select.config(bootstyle='secondary')
+                audio_select.config(bootstyle='secondary')
                 console_frame.config(bg='black', foreground='white')
                 btn_run.config(bootstyle='secondary')
         else:
@@ -880,22 +928,25 @@ def toggle_mode():
             hps_param2.configure(bootstyle='dark')
             hps_param3.configure(bootstyle='dark')
             hps_param4.configure(bootstyle='dark')
+            s.configure('custom.TButton', anchor='w', bordercolor='white', background='#fff', foreground='#555', lightcolor='gray', darkcolor='gray')
             if target_style == 'journal':
-                btn_audio_select.config(bootstyle='dark, outline')
+                audio_select.config(bootstyle='dark, outline')
                 console_frame.config(bg='#222', foreground='white')
                 btn_run.config(bootstyle='dark')
                 #btn_pay.config(bootstyle='dark, outline')
             elif target_style == 'yeti':
-                btn_audio_select.config(bootstyle='primary')
+                audio_select.config(bootstyle='primary')
                 console_frame.config(bg='yellow', foreground='black')
                 btn_run.config(bootstyle='primary')
                 #btn_pay.config(bootstyle='primary')
             else:
-                btn_audio_select.config(bootstyle='primary')
+                audio_select.config(bootstyle='primary')
                 console_frame.config(bg='pink', foreground='black')
                 btn_run.config(bootstyle='primary')
                 #btn_pay.config(bootstyle='primary')
         
+        prompt_select.configure(style='custom.TButton')
+
         # Update the utils file that keeps track of this view mode defaults
         with open(resource_path('utils/view_mode.txt'), 'w')as f:
             f.write('1,' + target_style)

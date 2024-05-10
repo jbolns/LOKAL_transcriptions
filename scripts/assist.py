@@ -35,11 +35,11 @@ def delete_LOKAL_temp():
     ''' F(x) deletes LOKAL_temp, used to store intermediate steps.
         Folder needs to be deleted to avoid errors in future.
     '''
-    path_to_temp = find_key_paths()[0] + '/LOKAL_temp'
+    path_to_temp_folder = find_key_paths()[0] + '/LOKAL_temp'
     try:
-        shutil.rmtree(path_to_temp)
+        shutil.rmtree(path_to_temp_folder)
     except:
-        os.rmdir(path_to_temp)
+        os.rmdir(path_to_temp_folder)
 
 
 # ---------------------
@@ -50,7 +50,7 @@ from scripts.utils import more_magic
 
 # AUDIO SPLITTING FUNCTION
 # Used by segmentation and diarisation scripts
-def split_audio(filepath, filename, path_to_temp, approach):
+def split_audio(filepath, filename, path_to_temp_folder, approach):
     ''' F(x) splits audio in as many chunks as speaker segments.
         Each segment is saved to temp folder.
     '''
@@ -62,18 +62,18 @@ def split_audio(filepath, filename, path_to_temp, approach):
     CHUNKS = []
     currentSpeaker = ''
     if approach == 'segmentation':
-        with open(path_to_temp + '/' + 'temp-segments.txt', 'r') as f:
+        with open(path_to_temp_folder + '/' + 'temp-segments.txt', 'r') as f:
             for line in f.readlines():
                 newline = line.split(', ')
                 CHUNKS.append([float(newline[0]), float(newline[1])])
             f.close()
     else:
-        with open(path_to_temp + '/' + 'temp-diary.txt', 'r') as f:
+        with open(path_to_temp_folder + '/' + 'temp-diary.txt', 'r') as f:
             for line in f.readlines():
-                newline = line.split(' ')
-                if newline[7] != currentSpeaker:
-                    CHUNKS.append([newline[7], float(newline[3])])
-                    currentSpeaker = newline[7]
+                newline = line.split(', ')
+                if newline[2] != currentSpeaker:
+                    CHUNKS.append([newline[2], float(newline[0])])
+                    currentSpeaker = newline[2]
             f.close()
 
     # Split audio into a file per speaker segment
@@ -87,14 +87,14 @@ def split_audio(filepath, filename, path_to_temp, approach):
                 extract = audio[CHUNKS[i][0]*1000:CHUNKS[i + 1][0]*1000]
             else:
                 extract = audio[CHUNKS[i][1]*1000:CHUNKS[i + 1][1]*1000]
-            extract.export(path_to_temp + '/' + filename + str(i).zfill(n) + '.wav',
+            extract.export(path_to_temp_folder + '/' + filename + str(i).zfill(n) + '.wav',
                            format='wav')
             i += 1
     if approach == 'segmentation':
         extract = audio[CHUNKS[i][0]*1000:]
     else:
         extract = audio[CHUNKS[i][1]*1000:]
-    extract.export(path_to_temp + '/' + filename + str(i).zfill(n) + '.wav',
+    extract.export(path_to_temp_folder + '/' + filename + str(i).zfill(n) + '.wav',
                    format='wav')
 
     # Return the speaker chunks for later usage
@@ -120,10 +120,7 @@ def magic():
 # Used by segmentation and diarisation scripts
 
 # Standard Whisper
-def run_whisper_on_loop(filename,
-                        model_to_use,
-                        path_to_temp,
-                        language):
+def whisper_loop(path_to_temp_folder, filename, path_to_prompt, model_size, language, gpu):
     ''' F(x) calls Whisper on each temp audio.
         It writes result of each run to a corresponding temp TXT
     '''
@@ -133,12 +130,18 @@ def run_whisper_on_loop(filename,
 
     # Load transcription model
     model_location = './models/whisper'
-    model = whisper.load_model(model_to_use,
-                               download_root=resource_path(model_location))
+    model = whisper.load_model(model_size, download_root=resource_path(model_location))
+
+    # Set a basic prompt or load a promt file
+    if path_to_prompt != '':
+        with open(path_to_prompt, 'r') as f:
+            prompt = f.read()
+    else:
+        prompt = 'This prompt is a fallback, with a comma.'
 
     # Perform transcription on each temp audio file.
     current_track = 1
-    list = [f for f in os.listdir(path_to_temp) if f.endswith('wav')]
+    list = [f for f in os.listdir(path_to_temp_folder) if f.endswith('wav')]
     for file in list:
         # Second if just ensure non-audio files don't make it through.
         # OCD hits differently at 2am in the morning.
@@ -149,16 +152,19 @@ def run_whisper_on_loop(filename,
             try:
                 # Get transcription from Whisper
                 if language == 'AUTO':
-                    result = model.transcribe(path_to_temp + '/' + file,
-                                              fp16=False,
+                    result = model.transcribe(path_to_temp_folder + '/' + file,
+                                              initial_prompt=prompt,
+                                              fp16=gpu,
                                               verbose=True)
                 else:
-                    result = model.transcribe(path_to_temp + '/' + file,
-                                              language=language, fp16=False,
+                    result = model.transcribe(path_to_temp_folder + '/' + file,
+                                              initial_prompt=prompt,
+                                              language=language,
+                                              fp16=gpu,
                                               verbose=True)
 
                 # Write transcription into a temp TXT file
-                with open(path_to_temp + '/' + 'temp-transcript-' + file[:-4] + '.txt', 'w') as f:
+                with open(path_to_temp_folder + '/' + 'temp-transcript-' + file[:-4] + '.txt', 'w') as f:
                     try:
                         f.write(result['text'])
                     except Exception:
@@ -173,10 +179,7 @@ def run_whisper_on_loop(filename,
 
 
 # Faster Whisper
-def run_faster_whisper_on_loop(filename,
-                               model_to_use,
-                               path_to_temp,
-                               language):
+def fw_loop(path_to_temp_folder, filename, model_size, language, gpu):
     ''' F(x) calls Faster Whisper on each temp audio.
         It writes result of each run to a corresponding temp TXT
     '''
@@ -187,13 +190,14 @@ def run_faster_whisper_on_loop(filename,
 
     # Load transcription model
     model_location = './models/faster-whisper'
-    model = WhisperModel(model_to_use, device="cpu",
-                         compute_type="int8",
+    model = WhisperModel(model_size,
+                         device='cpu' if gpu is False else 'cuda',
+                         compute_type='int8' if gpu is False else 'float16',
                          download_root=resource_path(model_location))
 
     # Perform transcription on each temp audio file.
     current_track = 1
-    list = [f for f in os.listdir(path_to_temp) if f.endswith('wav')]
+    list = [f for f in os.listdir(path_to_temp_folder) if f.endswith('wav')]
 
     # I tried multi-processing. Gains are too small.
     for file in list:
@@ -206,11 +210,13 @@ def run_faster_whisper_on_loop(filename,
             try:
                 # Get transcription from Faster Whisper
                 if language == 'AUTO':
-                    result, _ = model.transcribe(path_to_temp + '/' + file,
-                                                 beam_size=3)
+                    result, _ = model.transcribe(path_to_temp_folder + '/' + file,
+                                                 beam_size=3 if gpu is False else 5,
+                                                 vad_filter=True)
                 else:
-                    result, _ = model.transcribe(path_to_temp + '/' + file,
-                                                 beam_size=3,
+                    result, _ = model.transcribe(path_to_temp_folder + '/' + file,
+                                                 beam_size=3 if gpu is False else 5,
+                                                 vad_filter=True,
                                                  language=LANGUAGES[language])
 
                 segments = ''
@@ -219,7 +225,7 @@ def run_faster_whisper_on_loop(filename,
                     segments = segments + line.text
 
                 # Write transcription into a temp TXT file
-                with open(path_to_temp + '/' + 'temp-transcript-' + file[:-4] + '.txt', 'w') as f:
+                with open(path_to_temp_folder + '/' + 'temp-transcript-' + file[:-4] + '.txt', 'w') as f:
                     try:
                         f.write(segments)
                     except Exception:
@@ -235,17 +241,17 @@ def run_faster_whisper_on_loop(filename,
 
 # FUNCTION TO JOIN TEMPORARY TRANSCRIPTS
 # Used by segmentation and diarisation scripts
-def better_together(path_to_temp, CHUNKS):
+def together(path_to_temp_folder, CHUNKS):
     ''' F(x) joins temp files into a single array
     '''
     # Define stuff needed in function
     LINES = []
     # Join the diarisation array and contents of temporary TXT files
     i = 0
-    for file in os.listdir(path_to_temp):
+    for file in os.listdir(path_to_temp_folder):
         if file.startswith('temp-transcript-'):
-            with open(path_to_temp + "/" + file) as f:
-                LINES.append([CHUNKS[i][0], f.read()])
+            with open(path_to_temp_folder + "/" + file) as f:
+                LINES.append([CHUNKS[i][0], CHUNKS[i][1], f.read()])
                 i += 1
     # Return the joint array
     return LINES
@@ -253,9 +259,12 @@ def better_together(path_to_temp, CHUNKS):
 
 # FUNCTION TO WRITE A FINAL TRANSCRIPT AFTER JOINING TEMPORARY TRANSCRIPTS
 # Used by segmentation and diarisation scripts
-def write_out(path_to_output_file, filename, LINES, approach):
+def write_out(path_to_output_file, filename, LINES, approach, timestamps):
     ''' F(x) writes the final result to a TXT file in the output folder
     '''
+
+    # Function imports
+    import datetime
 
     # Write to the final transcription file
     with open(path_to_output_file, 'w') as f:
@@ -263,9 +272,14 @@ def write_out(path_to_output_file, filename, LINES, approach):
         for line in LINES:
             try:
                 if approach == 'segmentation':
-                    f.write(f'{line[1]} \n\n')
+                    start_timestamp = f'\n[{datetime.timedelta(seconds=int(line[0]))}]' if timestamps is True else ''
+                    line_content = line[2]
+                    f.write(f'{start_timestamp}\n{line_content}\n')
                 else:
-                    f.write(f'{line[0]} \n {line[1]} \n\n')
+                    start_timestamp = f'[{datetime.timedelta(seconds=int(line[1]))}] ' if timestamps is True else ''
+                    speaker = line[0]
+                    line_content = line[2]
+                    f.write(f'{start_timestamp}{speaker}{line_content}\n\n')
             except Exception:
                 pass
         f.close()

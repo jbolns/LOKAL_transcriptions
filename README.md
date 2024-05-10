@@ -12,8 +12,12 @@ LOKAL runs locally on your computer.[^1] It can avoid you the need to send audio
 
 ## Installation
 
-### Pre-requisites
-**FFmpeg.** Some features require [FFmpeg](https://www.ffmpeg.org/) to be installed on the computer you're using LOKAL – installation guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). If you absolutely cannot install FFmpeg, you may still be able to use LOKAL by sticking to audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
+### Prerequisites
+The following software needs to be installed in the device/computer where you plan to use LOKAL.
+* FFmpeg.
+  * Some features require [FFmpeg](https://www.ffmpeg.org/) to be installed on the computer you're using LOKAL. 
+  * Installation guidance for FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
+  * If you absolutely cannot install FFmpeg, LOKAL might still work for you if you use audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
 
 ### No-code installation
 If you want to save time, use the standalone version of LOKAL.
