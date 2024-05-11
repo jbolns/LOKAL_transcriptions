@@ -329,7 +329,8 @@ def app():
 
     # FINAL RUN AREA
     global btn_run
-    btn_run = tb.Button(run_frame, text='Run transcription',
+    btn_run = tb.Button(run_frame,
+                        text='Run transcription',
                         command=run,
                         bootstyle='dark')
     btn_run.pack(fill=X, anchor='w')
@@ -416,6 +417,8 @@ def run():
         try:
             transcription_thread = threading.Thread(target=run_transcription, daemon=True)
             transcription_thread.start()
+            btn_run.configure(text='TRANSCRIPTION RUNNING',
+                              command=lambda: messagebox.showwarning('showwarning', 'Transcription is already running.'))
         except Exception as e:
             logger(f'...\nTranscription thread has failed. Error is... {e}')
 
@@ -496,6 +499,8 @@ def run_transcription():
 
                     # Check timer and pop message if transcription succeeds
                     if done == 1:
+                        btn_run.configure(text='Run transcription',
+                                          command=run)
                         log_free_run()
                         end_time = time.time()
                         execution_time = (end_time - start_time)
