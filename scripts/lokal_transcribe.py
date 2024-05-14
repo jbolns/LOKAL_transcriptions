@@ -30,12 +30,13 @@ def transcribe_simple(settings, filename):
     path_to_output_file = os.path.dirname(path_to_audio) + '/' + filename + '.txt'
 
     # Check model family and perform transcription as appropriate
-    print(f'\n...\nSelected approach to transcription: {approach}\
+    print(f'\n...\nSelected approach: {approach}\
           \n\n...\nLoading or downloading model\
           \nIf model not already on local memory, Internet is required.\n')
 
     # Whisper track
     if family == 'openai_whisper':
+
         # Import appropriate library and load model
         import whisper
         model = whisper.load_model(model, download_root=resource_path('./models/whisper'))

@@ -92,6 +92,7 @@ def app():
 
     config_frame = tb.Frame(right_frame)
     config_frame.pack(fill=X)
+    config_frame.bind("<Configure>", resize)
 
     params_frame = tb.Frame(lower_frame)
     params_frame.pack(pady=(14, 14), fill=X)
@@ -187,7 +188,7 @@ def app():
                              font='Helvetica 8 underline',
                              cursor='hand2')
     tcs_extension.pack(side=LEFT)
-    tcs_extension.bind('<Button-1>', pop_terms)
+    tcs_extension.bind('<Button-1>', lambda e: pop_window(e, 'tcs'))
 
     # KEY HYPER-PARAMETERS SIDEBAR
     # Dropdown to select desired model to transcription
@@ -220,7 +221,7 @@ def app():
     type_select = tb.Combobox(config_frame, values=[i.capitalize() for i in types])
     type_select.pack()
     type_select.current(0)
-    type_select.bind('<<ComboboxSelected>>', type_choice)
+    type_select.bind('<<ComboboxSelected>>', approach_choice)
 
     # Dropdown to select language
     langs = ['AUTO'] + sorted(LANGUAGES.keys())
@@ -371,7 +372,7 @@ def app():
                            font='Helvetica 8',
                            cursor='hand2')
     lbl_credits.pack(side=LEFT, pady=3)
-    lbl_credits.bind('<Button-1>', pop_credits)
+    lbl_credits.bind('<Button-1>', lambda e: pop_window(e, 'credits'))
 
     lbl_reset = tb.Label(run_frame,
                          text='RESET MODELS',
@@ -579,6 +580,17 @@ def browse_for_file(type_of_file):
             settings['path_to_prompt'] = ''
 
 
+def key_settings():
+    ''' F(x) handles changes in the checkbox for
+        - T&Cs
+        - Timestamps
+        - Compute type (cpu/gpu).
+    ''' 
+    settings['tcs_ok'] = tcs_ok.get()
+    settings['timestamps_on'] = stamps_on.get()
+    settings['gpu_on'] = gpu_on.get()
+
+
 def family_choice(e):
     ''' F(x) handles changes in model family/provider selection.
     '''
@@ -601,15 +613,14 @@ def family_choice(e):
         settings['model'] = model_select.get().lower()
 
 
-def key_settings():
-    ''' F(x) handles changes in the checkbox for
-        - T&Cs
-        - Timestamps
-        - Compute type (cpu/gpu)
-    ''' 
-    settings['tcs_ok'] = tcs_ok.get()
-    settings['timestamps_on'] = stamps_on.get()
-    settings['gpu_on'] = gpu_on.get()
+def approach_choice(e):
+    ''' F(x) handles changes in approach selection and triggers
+        window resize to try and keep all app in view at all times.
+    '''  # Could be merged, but it's only a few lines and I'm lazy
+
+    approach = type_select.get()
+    settings['approach'] = approach.lower()
+    hparams(approach.lower())
 
 
 def model_language_settings(e):
@@ -617,15 +628,6 @@ def model_language_settings(e):
     '''
     settings['model'] = model_select.get().lower()
     settings['language'] = lang_select.get().lower()
-
-
-def type_choice(e):
-    ''' F(x) handles changes in approach selection and triggers
-        window resize to try and keep all app in view at all times.
-    '''  # Could be merged, but it's only a few lines and I'm lazy
-    approach = type_select.get()
-    settings['approach'] = approach.lower()
-    hparams(approach.lower())
 
 
 def hparams(approach):
@@ -644,8 +646,6 @@ def hparams(approach):
         hps_frame.pack(pady=3, anchor='w', fill=X, expand=True)
         diarisation_params.pack(anchor='n', pady=(14, 0), expand=True)
         segmentation_params.forget()
-    else:
-        pass
 
 
 def logger(text):
@@ -709,35 +709,34 @@ def logger(text):
     console_frame.see('end')
 
 
-def pop_terms(e):
+def pop_window(e, pop_type):
     ''' F(x) launches a new window containing terms and conditions.
-    '''  # Obviously, could be merged, too. Some day.
-    apache_terms = open(resource_path('utils/apache_terms.txt'), 'r').read()
-    terms_root = tb.Toplevel()
-    terms_root.iconbitmap(resource_path('images/icon.ico'))
-    terms_root.title('Terms & Conditions')
-    terms_box = tb.ScrolledText(terms_root)
-    terms_box.pack()
-    terms_box.insert(END, apache_terms)
-    terms_box.configure(state='disabled')
-
-
-def pop_credits(e):
-    ''' F(x) launches a new window containing credits.
-    '''  # Obviously, could be merged, too. Some day.
-    credits = open(resource_path('utils/credits.txt'), 'r').read()
-    credits_root = tb.Toplevel()
-    credits_root.iconbitmap(resource_path('images/icon.ico'))
-    credits_root.title('Credits')
-    credits_box = tb.ScrolledText(credits_root)
-    credits_box.pack()
-    credits_box.insert(END, credits)
-    credits_box.configure(state='disabled')
+    '''
+    
+    # Define type of window to pup up
+    if pop_type == 'tcs':
+        path_to_file = 'utils/apache_terms.txt'
+        title_text = 'Terms & Conditions'
+    elif pop_type == 'credits':
+        path_to_file = 'utils/credits.txt'
+        title_text = 'Credits'
+    
+    # Grab the contents to show
+    content = open(resource_path(path_to_file), 'r').read()
+    
+    # Show them
+    pop_root = tb.Toplevel()
+    pop_root.iconbitmap(resource_path('images/icon.ico'))
+    pop_root.title(title_text)
+    pop_box = tb.ScrolledText(pop_root)
+    pop_box.pack()
+    pop_box.insert(END, content)
+    pop_box.configure(state='disabled')
 
 
 def pop_license(e):
     ''' F(x) launches a new window containing credits.
-    '''  # Obviously, could be merged, too. Some day.
+    '''
 
     help_us_help = "Get a code to activate all visual features and help us develop LOKAL and other open resources further by making a small voluntary payment."
     enter_invoice = 'After a payment is made, you will get an invoice. Enter your invoice number below to activate all visual features.'
@@ -863,7 +862,7 @@ def resize(e):
     root_h = root.winfo_height()
 
     # Choose min recommended height
-    target_h = root_h if root_h <= max_h else max_h
+    target_h = root_h if root_h < max_h else max_h
 
     # Apply dimensions without foreclosing room for user-driven resize
     app.geometry(f'{root_w}x{target_h}')
