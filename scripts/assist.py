@@ -17,6 +17,7 @@ SPDX-License-Identifier: Apache-2.0
 # ...
 import os
 import shutil
+from scripts.utils import more_magic
 
 
 # ---------------------
@@ -38,7 +39,7 @@ def delete_LOKAL_temp():
     path_to_temp_folder = find_key_paths()[0] + '/LOKAL_temp'
     try:
         shutil.rmtree(path_to_temp_folder)
-    except:
+    except Exception:
         os.rmdir(path_to_temp_folder)
 
 
@@ -46,10 +47,8 @@ def delete_LOKAL_temp():
 # FUNCTIONS USED BY SEVERAL FILES
 # ...
 # ---------------------
-from scripts.utils import more_magic
 
 # AUDIO SPLITTING FUNCTION
-# Used by segmentation and diarisation scripts
 def split_audio(filepath, filename, path_to_temp_folder, approach):
     ''' F(x) splits audio in as many chunks as speaker segments.
         Each segment is saved to temp folder.
@@ -100,6 +99,7 @@ def split_audio(filepath, filename, path_to_temp_folder, approach):
     # Return the speaker chunks for later usage
     return CHUNKS
 
+
 # RANDOM CHECKS
 def checker():
     from scripts.assist import resource_path
@@ -113,11 +113,11 @@ def checker():
         result = 'no license'
     return result
 
+
 # TRANSCRIPTION ON A LOOP
 def magic():
     return more_magic()
 
-# Used by segmentation and diarisation scripts
 
 # Standard Whisper
 def whisper_loop(path_to_temp_folder, filename, path_to_prompt, model_size, language, gpu):
@@ -240,7 +240,6 @@ def fw_loop(path_to_temp_folder, filename, model_size, language, gpu):
 
 
 # FUNCTION TO JOIN TEMPORARY TRANSCRIPTS
-# Used by segmentation and diarisation scripts
 def together(path_to_temp_folder, CHUNKS):
     ''' F(x) joins temp files into a single array
     '''
@@ -258,7 +257,6 @@ def together(path_to_temp_folder, CHUNKS):
 
 
 # FUNCTION TO WRITE A FINAL TRANSCRIPT AFTER JOINING TEMPORARY TRANSCRIPTS
-# Used by segmentation and diarisation scripts
 def write_out(path_to_output_file, filename, LINES, approach, timestamps):
     ''' F(x) writes the final result to a TXT file in the output folder
     '''

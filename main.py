@@ -55,8 +55,7 @@ def app():
 
     # ROOT WINDOW & ROOT CONFIGS
     global app
-    app = tb.Window(title='LOKAL: Local AI transcriptions',
-                    themename='journal')
+    app = tb.Window(title='LOKAL: Local AI transcriptions', themename='journal')
     app.title('LOKAL: Local AI transcriptions')
     app.iconbitmap(resource_path('images/icon.ico'))
 
@@ -71,16 +70,13 @@ def app():
 
     # FRAMES FOR VISUAL ORGANISATION
     top_frame = tb.Frame(root)
-    top_frame.pack(side=TOP, padx=14, pady=(3, 14),
-                   anchor='ne', expand=True)
+    top_frame.pack(side=TOP, padx=14, pady=(3, 14), anchor='ne', expand=True)
 
     upper_frame = tb.Frame(root)
-    upper_frame.pack(side=TOP, pady=(14, 0),
-                     anchor='s', expand=True)
+    upper_frame.pack(side=TOP, pady=(14, 0), anchor='s', expand=True)
 
     lower_frame = tb.Frame(root)
-    lower_frame.pack(side=BOTTOM, pady=(0, 3),
-                     padx=14, fill=X, anchor='n', expand=True)
+    lower_frame.pack(side=BOTTOM, pady=(0, 3), padx=14, fill=X, anchor='n', expand=True)
 
     left_frame = tb.Frame(upper_frame)
     left_frame.pack(side=LEFT, padx=28, anchor='e', expand=True)
@@ -111,7 +107,7 @@ def app():
         for theme in themes:
             radio_button = tb.Radiobutton(top_frame,
                                           variable=my_theme,
-                                          value= theme,
+                                          value=theme,
                                           style='custom.TRadiobutton',
                                           command=toggle_mode)
             radio_button.pack(side=RIGHT, anchor='n', pady=3)
@@ -158,7 +154,7 @@ def app():
                              onvalue=True,
                              offvalue=False,
                              command=key_settings)
-    gpu_btn.pack(side=LEFT, padx=(0,3))
+    gpu_btn.pack(side=LEFT, padx=(0, 3))
 
     # Optional timestamps
     global stamps_on
@@ -170,7 +166,7 @@ def app():
                                 onvalue=True,
                                 offvalue=False,
                                 command=key_settings)
-    stamps_btn.pack(side=LEFT, padx=(0,3))
+    stamps_btn.pack(side=LEFT, padx=(0, 3))
 
     global tcs_ok
     tcs_ok = tb.BooleanVar()
@@ -195,7 +191,7 @@ def app():
     tb.Label(config_frame, text='MODEL', font='Helvetica 8 bold').pack(anchor='w')
 
     families = ['OpenAI: Whisper', 'Systran: Faster Whisper']
-    
+
     global whisper
     global fs_whisper
     whisper = ['tiny', 'base', 'small', 'medium', 'large']
@@ -215,7 +211,7 @@ def app():
 
     # Dropdown to select desired approach to transcription
     types = ['simple', 'segmentation', 'diarisation']
-    
+
     tb.Label(config_frame, text='APPROACH', font='Helvetica 8 bold').pack(anchor='w', pady=[14, 0])
     global type_select
     type_select = tb.Combobox(config_frame, values=[i.capitalize() for i in types])
@@ -237,11 +233,9 @@ def app():
     global prompt_separator
     prompt_separator = tb.Separator(config_frame)
     prompt_separator.pack(anchor='w', fill=X, pady=[21, 14])
-    
+
     global prompt_intro
-    prompt_intro = tb.Label(config_frame,
-                            text='OPTIONAL PROMPT',
-                            font='Helvetica 8 bold')
+    prompt_intro = tb.Label(config_frame, text='OPTIONAL PROMPT', font='Helvetica 8 bold')
     prompt_intro.pack(anchor='w', pady=0)
 
     global prompt_select
@@ -288,7 +282,7 @@ def app():
     # Segmentation wrapper frame
     global diarisation_params
     diarisation_params = tb.Frame(hps_frame)
-    
+
     # Diarisation hyper-parameters
     hps_hdr = tb.Label(diarisation_params,
                        text='ADDITIONAL HYPER-PARAMETERS AVAILABLE',
@@ -310,7 +304,8 @@ def app():
     hps__param4_lbl.pack()
 
     global hps_param4
-    hps_param4 = tb.Spinbox(diarisation_params, bootstyle='dark',
+    hps_param4 = tb.Spinbox(diarisation_params,
+                            bootstyle='dark',
                             font='Helvetica 10 bold',
                             values=['AUTO', 1, 2, 3, 4, 5],
                             state='readonly')
@@ -330,17 +325,12 @@ def app():
 
     # FINAL RUN AREA
     global btn_run
-    btn_run = tb.Button(run_frame,
-                        text='Run transcription',
-                        command=run,
-                        bootstyle='dark')
+    btn_run = tb.Button(run_frame, text='Run transcription', command=run, bootstyle='dark')
     btn_run.pack(fill=X, anchor='w')
 
     if license_status != magic():
         global btn_pay
-        btn_pay = tb.Button(run_frame,
-                            text=call_to_action,
-                            bootstyle='dark, outline')
+        btn_pay = tb.Button(run_frame, text=call_to_action, bootstyle='dark, outline')
         btn_pay.pack(fill=X, pady=[3, 0], anchor='w')
         btn_pay.bind('<Button-1>', pop_license)
 
@@ -360,9 +350,8 @@ def app():
                             font='Helvetica 8',
                             cursor='hand2')
     lbl_services.pack(side=LEFT, pady=3)
-    lbl_services.bind('<Button-1>',
-                      lambda e: webbrowser.open('https://www.polyzentrik.com/services'))
-    
+    lbl_services.bind('<Button-1>', lambda e: webbrowser.open('https://www.polyzentrik.com/services'))
+
     tb.Label(run_frame, text='|',
              font='Helvetica 8',
              cursor='hand2').pack(side=LEFT, pady=3)
@@ -400,16 +389,16 @@ def run():
     # For good health, try delete temp folders accidentally left previously
     try:
         delete_LOKAL_temp()
-    except:  # Ignore exceptions, likely, no temp folders existed.
-        pass
+    except Exception:
+        logger('...')
 
     # Check audio is selected and T&Cs are agreed, proceed if so
     if settings['path_to_audio'] == '':
         logger('\n\n...\nYou have not selected an audio file. You need to select an audio for a transcription to be possible.')
-        popbox = messagebox.showwarning('showwarning', 'You have not selected an audio file. It is therefore impossible to proceed.')
+        messagebox.showwarning('showwarning', 'You have not selected an audio file. It is therefore impossible to proceed.')
     elif settings['tcs_ok'] == 0:
         logger('\n\n...\nYou have not accepted the terms and conditions. You need to accept the terms and conditions for a transcription to be possible.')
-        popbox = messagebox.showwarning('showwarning', 'You have not accepted the terms and conditions. It is therefore impossible to proceed.')
+        messagebox.showwarning('showwarning', 'You have not accepted the terms and conditions. It is therefore impossible to proceed.')
     else:
         hps_frame.forget()
         notify_frame.pack(fill=X, expand=TRUE, padx=48)
@@ -438,7 +427,7 @@ def run_transcription():
 
     # Check if file needs conversion, convert if so
     conversion = 0
-    if not path_to_audio.endswith('.wav'):
+    if path_to_audio.endswith('.wav') is not True:
         from scripts.utils import convert_to_wav
         logger('...\nCONVERTING AUDIO TO .WAV FORMAT\
               \nLOKAL will save a temp audio file to the same folder as the original audio.\
@@ -460,24 +449,24 @@ def run_transcription():
             with redirect_stdout(g):
                 # Launch transcription
                 try:
-                    if settings['tcs_ok'] != True:  # Reject transcription T&Cs not agreed
+                    if settings['tcs_ok'] is not True:  # Reject transcription T&Cs not agreed
                         print('...\nCannot proceed to transcription unless user agrees to terms and conditions.')
                     else:  # Proceed if user agreed to T&Cs
                         try:
                             print('...\nSTARTING TRANSCRIPTION...')
-                            
+
                             if settings['approach'] != 'simple':
                                 from scripts.lokal_transcribe import transcribe_complex
-                                
+
                                 if settings['approach'] == 'segmentation':
                                     HPs = {'min_duration_on': hps_param1.amountusedvar.get()/1000,
-                                        'min_duration_off': hps_param2.amountusedvar.get()/1000}
+                                           'min_duration_off': hps_param2.amountusedvar.get()/1000}
                                 else:
                                     HPs = {'min_duration_off': hps_param2.amountusedvar.get()/1000,
-                                    'speaker_num': hps_param4.get()}
-                                
+                                           'speaker_num': hps_param4.get()}
+
                                 result, done = transcribe_complex(settings, filename, HPs)
-                            
+
                             else:
                                 from scripts.lokal_transcribe import transcribe_simple
                                 result, done = transcribe_simple(settings, filename)
@@ -488,10 +477,10 @@ def run_transcription():
                             print('...\nAttempting to delete temporary folders.')
                             try:
                                 delete_LOKAL_temp()
-                            except:
+                            except Exception:
                                 print('Unable to find or delete temporary folders.\
-                                    \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
-                                    \nIf present, delete "LOKAL_temp" to avoid future errors.')
+                                      \nFor good health, check your "user" folder for a folder named "LOKAL_temp".\
+                                      \nIf present, delete "LOKAL_temp" to avoid future errors.')
 
                     if conversion == 1:
                         from scripts.utils import delete_converted_wav
@@ -500,20 +489,17 @@ def run_transcription():
 
                     # Check timer and pop message if transcription succeeds
                     if done == 1:
-                        btn_run.configure(text='Run transcription',
-                                          command=run)
+                        btn_run.configure(text='Run transcription', command=run)
                         log_free_run()
                         end_time = time.time()
                         execution_time = (end_time - start_time)
                         mm, ss = divmod(execution_time, 60)
                         hh, mm = divmod(mm, 60)
                         duration = f'{int(hh):02}:{int(mm):02}:{int(ss):02}'
-                        victory_msg = f'\n...\n{result}\
-                            \nExecution time: {duration}.\
-                            \n\n...\nTHANK YOU FOR USING LOKAL!'
+                        victory_msg = f'\n...\n{result}\nExecution time: {duration}.\n\n...\nTHANK YOU FOR USING LOKAL!'
                         print(victory_msg)
                         return victory_msg
-                except:
+                except Exception:
                     fail_msg = 'Transcription failed. Try a different model/approach.'
                     print(fail_msg)
                     return fail_msg
@@ -552,7 +538,7 @@ class WriteProcessor:
 def browse_for_file(type_of_file):
     ''' F(x) pops window open for user to select files.
     '''
-    
+
     if type_of_file == 'audio':
         filetypes = (
             ('common audio formats', ('*.wav', '*.mp3', '*.mp4', '*.m4a', '*.flac', '*.wma', '*.aac')),
@@ -562,15 +548,14 @@ def browse_for_file(type_of_file):
             ('text files', ('*.txt')),
             ('all files', '*.*'))
 
-    path_to_file = filedialog.askopenfilename(filetypes=filetypes,
-                                      initialdir=find_key_paths()[1])
-    
+    path_to_file = filedialog.askopenfilename(filetypes=filetypes, initialdir=find_key_paths()[1])
+
     if path_to_file:
         if type_of_file == 'audio':
             settings['path_to_audio'] = path_to_file
         else:
             settings['path_to_prompt'] = path_to_file
-        
+
         console_frame.delete('1.0', END)
         logger(f'...\nPath to selected {type_of_file} is: {path_to_file}.')
     else:
@@ -585,7 +570,7 @@ def key_settings():
         - T&Cs
         - Timestamps
         - Compute type (cpu/gpu).
-    ''' 
+    '''
     settings['tcs_ok'] = tcs_ok.get()
     settings['timestamps_on'] = stamps_on.get()
     settings['gpu_on'] = gpu_on.get()
@@ -596,6 +581,7 @@ def family_choice(e):
     '''
     family = family_select.get().lower()
     settings['family'] = family.replace(':', '').replace(' ', '_')
+
     if family == 'openai: whisper':
         prompt_separator.pack(anchor='w', fill=X, pady=[21, 14])
         prompt_intro.pack(anchor='w', pady=0)
@@ -603,7 +589,7 @@ def family_choice(e):
         model_select.config(value=[i.capitalize() for i in whisper])
         model_select.current(0)
         settings['model'] = model_select.get().lower()
-        
+
     elif family == 'systran: faster whisper':
         prompt_select.forget()
         prompt_intro.forget()
@@ -616,7 +602,7 @@ def family_choice(e):
 def approach_choice(e):
     ''' F(x) handles changes in approach selection and triggers
         window resize to try and keep all app in view at all times.
-    '''  # Could be merged, but it's only a few lines and I'm lazy
+    '''
 
     approach = type_select.get()
     settings['approach'] = approach.lower()
@@ -650,41 +636,31 @@ def hparams(approach):
 
 def logger(text):
     ''' F(x) inserts any app generated updates to main app console.
-        Ugliest function ever, but there is a need to be very careful 
+        Ugliest function ever, but there is a need to be very careful
         not to accidentally trigger an infinite loop if a transcribed
         line ends up having similar words/chars as progress bar updates.
     '''
 
     # The "console" on the GUI is not actually a "console"
     # One needs to take and put things into it as required
-
-    # Annoying warnings that users do not need to see
-    if 'set_audio_backend' in text\
-        or 'torchaudio backend is switched to' in text\
-            or 'torchvision is not available' in text\
-                or 'HF_HUB_DISABLE_SYMLINKS_WARNING' in text:
+    warnings = ['set_audio_backend', 'torchaudio backend is switched to', 'torchvision is not available', 'HF_HUB_DISABLE_SYMLINKS_WARNING']
+    if any(warning in text for warning in warnings):  # Annoying warnings most users do not need
         pass
 
-    # Progress bars
-    # ELIF is very case by case to avoid accidentally 
-    # treating a real update as a progress bar update
-    
-    elif '%' in text: 
-        
+    elif '%' in text:  # Progress bars
+
         # FASTER WHISPER DOWNLOADS
-        if 'vocabulary.txt' in text\
-            or 'tokenizer.json' in text\
-                or 'config.json' in text\
-                    or 'model.bin' in text: 
-            
+        fs_download_terms = ['vocabulary.txt', 'tokenizer.json', 'config.json', 'model.bin']
+        if any(term in text for term in fs_download_terms):
+
             # Flag last log before download start
             # Delete any lines after
-            bool = True 
-            while bool == True:
+            bool = True
+            while bool is True:
                 console_frame.delete('end-1l', END)
                 if console_frame.get("end-1c linestart", "end-1c lineend").startswith('If model not already on local memory,'):
                     bool = False
-            
+
             # Write the update
             if 'model.bin' in text:
                 text = text.replace('\n', '').strip()
@@ -692,11 +668,10 @@ def logger(text):
                 console_frame.insert(END, text)
             else:
                 print('\n\nDownloading...\n')
-        
-        # pyannote's (RICH) BARS
-        elif 'segmentation' in text\
-            or 'embeddings'\
-                or 'diarization' in text:
+
+        # PYANNOTE (RICH) BARS
+        pyannote_terms = ['segmentation', 'embeddings', 'diarization']
+        if any(term in text for term in pyannote_terms):
             console_frame.delete('end-2l', END)
             console_frame.insert('end', '\n{}'.format(text))
 
@@ -712,7 +687,7 @@ def logger(text):
 def pop_window(e, pop_type):
     ''' F(x) launches a new window containing terms and conditions.
     '''
-    
+
     # Define type of window to pup up
     if pop_type == 'tcs':
         path_to_file = 'utils/apache_terms.txt'
@@ -720,10 +695,10 @@ def pop_window(e, pop_type):
     elif pop_type == 'credits':
         path_to_file = 'utils/credits.txt'
         title_text = 'Credits'
-    
+
     # Grab the contents to show
     content = open(resource_path(path_to_file), 'r').read()
-    
+
     # Show them
     pop_root = tb.Toplevel()
     pop_root.iconbitmap(resource_path('images/icon.ico'))
@@ -746,37 +721,37 @@ def pop_license(e):
     license_root.iconbitmap(resource_path('images/icon.ico'))
 
     tb.Label(license_root,
-        text='Help us help',
-        justify='left',
-        font='Helvetica 24 bold').pack(fill=X, padx=7, pady=[14,3])
-    
+             text='Help us help',
+             justify='left',
+             font='Helvetica 24 bold').pack(fill=X, padx=7, pady=[14, 3])
+
     tb.Label(license_root,
              wraplength=400,
              text=help_us_help,
-             justify='left').pack(fill=X, padx=7, pady=[0,3])
+             justify='left').pack(fill=X, padx=7, pady=[0, 3])
 
-    license_get = tb.Button(license_root, 
+    license_get = tb.Button(license_root,
                             bootstyle='success',
                             text='MAKE VOLUNTARY PAYMENT')
-    license_get.pack(anchor='w', padx=7, pady=[0,7])
+    license_get.pack(anchor='w', padx=7, pady=[0, 7])
     license_get.bind('<Button-1>', lambda e: webbrowser.open('https://www.polyzentrik.com/help-us-help/'))
 
     tb.Label(license_root,
-        text='Activation',
-        justify='left',
-        font='Helvetica 24 bold').pack(fill=X, padx=7, pady=[14,3])
-    
+             text='Activation',
+             justify='left',
+             font='Helvetica 24 bold').pack(fill=X, padx=7, pady=[14, 3])
+
     tb.Label(license_root,
              wraplength=400,
              text=enter_invoice,
-             justify='left').pack(fill=X, padx=7, pady=[0,3])
-    
+             justify='left').pack(fill=X, padx=7, pady=[0, 3])
+
     global license_box
     license_box = tb.Entry(license_root, bootstyle='success')
-    license_box.pack(side=LEFT, padx=[7,0], pady=[3,14], anchor='e')
+    license_box.pack(side=LEFT, padx=[7, 0], pady=[3, 14], anchor='e')
 
     license_save = tb.Button(license_root, bootstyle='dark', text='ACTIVATE')
-    license_save.pack(side=LEFT, pady=[3,14], anchor='e')
+    license_save.pack(side=LEFT, pady=[3, 14], anchor='e')
     license_save.bind('<Button-1>', write_license)
 
 
@@ -792,10 +767,10 @@ def reset_models(e):
                     print(j)
                     try:
                         shutil.rmtree(f'./models/{i}/{j}')
-                    except:
+                    except Exception:
                         try:
                             os.rmdir(f'./models/{i}/{j}')
-                        except:
+                        except Exception:
                             os.remove(f'./models/{i}/{j}')
 
 
@@ -804,10 +779,9 @@ def write_license(e):
     try:
         encrypt_and_write(license_box.get())
         license_root.destroy()
-        popbox = messagebox.showwarning('showwarning', 'Please restart LOKAL.')
-    except:
+        messagebox.showwarning('showwarning', 'Please restart LOKAL.')
+    except Exception:
         print('ERROR: License not saved.')
-
 
 
 def kill_everything():
@@ -816,8 +790,7 @@ def kill_everything():
     '''
 
     # Update dark/light mode file for next launch
-    no_style = open(
-        resource_path('utils/view_mode.txt'), 'r').read().split(',')[1]
+    no_style = open(resource_path('utils/view_mode.txt'), 'r').read().split(',')[1]
     with open(resource_path('utils/view_mode.txt'), 'w')as f:
         f.write('0,' + no_style)
         f.close()
@@ -829,13 +802,13 @@ def kill_everything():
         try:
             print('Removing TEMP folders, if any.')
             shutil.rmtree(path_to_temp_folder)
-        except:
+        except Exception:
             try:
                 print('Removing TEMP folders, if any.')
                 os.rmdir(path_to_temp_folder)
-            except:
+            except Exception:
                 print('Exiting.')
-    except:
+    except Exception:
         print('Unable to exit gracefully.\
               \nCheck your "user" folder for a folder named "LOKAL_temp".\
               \nIf present, delete "LOKAL_temp" to avoid future errors.')
@@ -878,13 +851,11 @@ def toggle_mode():
     style = app.style
 
     # Establish if app is launching and get current from file
-    switch_flag, launch_style = open(
-        resource_path('utils/view_mode.txt'), 'r').read().split(',')
-    
+    switch_flag, launch_style = open(resource_path('utils/view_mode.txt'), 'r').read().split(',')
+
     license_status = check_license()[0]
     if license_status == 0:
         style.theme_use('vapor')
-        #spinbox_view_select.set('COLORS DISABLED')
         audio_select.config(bootstyle='light')
         console_frame.config(bg='yellow', foreground='white')
         audio_select.config(bootstyle='success')
@@ -892,16 +863,13 @@ def toggle_mode():
         btn_pay.config(bootstyle='secondary')
     elif license_status == 1:
         pass
-        #spinbox_view_select.set('COLORS DISABLED')
     elif license_status == 2:
         # Set target style
         if switch_flag == '0':  # If just opened, use saved style
             target_style = launch_style
             my_theme.set(target_style)
-            #spinbox_view_select.set(target_style.upper())
         else:  # Else, user is switching, use value from GUI
             target_style = my_theme.get()
-            #target_style = spinbox_view_select.get().lower()
 
         # Switch from current to default or chosen mode
         s = tb.Style()
@@ -916,12 +884,10 @@ def toggle_mode():
                 audio_select.config(bootstyle='light, outline')
                 console_frame.config(bg='aquamarine', foreground='black')
                 btn_run.config(bootstyle='light, outline')
-                #btn_pay.config(bootstyle='light')
-            elif target_style == 'vapor': 
+            elif target_style == 'vapor':
                 audio_select.config(bootstyle='light')
                 console_frame.config(bg='black', foreground='white')
                 btn_run.config(bootstyle='light')
-                #btn_pay.config(bootstyle='light')
             else:
                 audio_select.config(bootstyle='secondary')
                 console_frame.config(bg='black', foreground='white')
@@ -937,18 +903,15 @@ def toggle_mode():
                 audio_select.config(bootstyle='dark, outline')
                 console_frame.config(bg='#222', foreground='white')
                 btn_run.config(bootstyle='dark')
-                #btn_pay.config(bootstyle='dark, outline')
             elif target_style == 'yeti':
                 audio_select.config(bootstyle='primary')
                 console_frame.config(bg='yellow', foreground='black')
                 btn_run.config(bootstyle='primary')
-                #btn_pay.config(bootstyle='primary')
             else:
                 audio_select.config(bootstyle='primary')
                 console_frame.config(bg='pink', foreground='black')
                 btn_run.config(bootstyle='primary')
-                #btn_pay.config(bootstyle='primary')
-        
+
         prompt_select.configure(style='custom.TButton')
 
         # Update the utils file that keeps track of this view mode defaults

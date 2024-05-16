@@ -1,10 +1,22 @@
+'''
+v1. Jan 2024.
+@author: Dr J. / Polyzentrik Tmi.
+
+LOKAL sticks to a functional programming paradigm.
+Any classes must be justified exceptionally well.
+
+Copyright (c) 2023 Jose A Bolanos / Polyzentrik Tmi.
+SPDX-License-Identifier: Apache-2.0
+
+'''
+
 # ---------------------
 # LICENSE CHECKs
 # ...
 def check_license():
     import config
     from scripts.utils import decode_license
-    
+
     if config.license_status == 'no license':
         status = 0
         message = 'MAKE LOKAL PRETTY AGAIN'
@@ -33,10 +45,12 @@ def log_free_run():
         else:
             config.license_status = 'due'
 
+
 # ---------------------
 # AUDIO CONVERSION
 # Needed if main audio is not in .wav format
 # ...
+
 def convert_to_wav(filepath, filename):
     from pydub import AudioSegment
 
@@ -51,11 +65,13 @@ def convert_to_wav(filepath, filename):
         audio.export(new_filepath, format='wav')
 
         return 1
-    except:
+    except Exception:
         return 0
+
 
 def more_magic():
     return 2
+
 
 def delete_converted_wav(filepath):
     if filepath.endswith('wav'):
@@ -64,16 +80,17 @@ def delete_converted_wav(filepath):
             os.remove(filepath)
             return '\n\n...\nDELETED CONVERTED AUDIO\
                   \nSuccesfully deleted the temporary .wav version of your audio used for transcription.\n'
-        except:
+        except Exception:
             return '\n\n...\nUNABLE TO DELETE CONVERTED AUDIO\
                   \nLOKAL saved a .wav version of the original audio to the same folder as the original audio.\
                   \nNormally, the converted version is deleted automatically, but there were errors with deletion.\
                   \nCheck if the file is still there and delete manually if desired.\n'
 
+
 def decode_license(license):
     from cryptography.fernet import Fernet
     from scripts.assist import resource_path
-    
+
     key = open(resource_path('utils/key.txt'), 'r').read()
     f = Fernet(key)
     real_key = f.decrypt(license.encode()).decode()
@@ -86,6 +103,7 @@ def decode_license(license):
             return 1
         else:
             return 0
+
 
 LANGUAGES = {
     "english": "en",
@@ -181,7 +199,7 @@ LANGUAGES = {
     "malagasy": "mg",
     "assamese": "as",
     "tatar": "tt",
-    "hawaiian": "haw" ,
+    "hawaiian": "haw",
     "lingala": "ln",
     "hausa": "ha",
     "bashkir": "ba",

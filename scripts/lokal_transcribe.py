@@ -65,16 +65,15 @@ def transcribe_simple(settings, filename):
 
     # Faster Whisper track
     elif family == 'systran_faster_whisper':
-        
+
         # Imports and load model
         from scripts.utils import LANGUAGES
         from faster_whisper import WhisperModel
-          
+
         model = WhisperModel(model_size,
                              device='cpu' if gpu is False else 'cuda',
                              compute_type='int8' if gpu is False else 'float16',
                              download_root=resource_path('./models/faster-whisper'))
-    
 
         # Perform transcription
         print('\n...\nTranscribing audio')
@@ -99,9 +98,9 @@ def transcribe_simple(settings, filename):
             start_timestamp = str(datetime.timedelta(seconds=int(segment['start'])))
             content = segment['text']
             if timestamps is True:
-                line =  f'[{start_timestamp}] {content}'
+                line = f'[{start_timestamp}] {content}'
             else:
-                line =  f'{content}'
+                line = f'{content}'
             try:
                 f.write(f'{line.strip()}\n')
             except Exception:
@@ -178,14 +177,15 @@ def transcribe_complex(settings, filename, HPs):
     try:
         try:
             shutil.rmtree(path_to_temp_folder)
-        except:
+        except Exception:
             os.rmdir(path_to_temp_folder)
-    except:
+    except Exception:
         pass
 
     # Declare victory
     return (f'Finished transcription of: {filename}.\
             \nFind it on the same folder as your audio.', 1)
+
 
 # ---------------------
 # SEGMENTATION FUNCTION
@@ -205,12 +205,8 @@ def segmentation(path_to_audio, filename, path_to_temp_folder, HPs):
     pipeline = VoiceActivityDetection(segmentation=model)
 
     # Define hyper-parameters for model
-    PARAMS = {
-        # ignore short speech regions
-        'min_duration_on': HPs['min_duration_on'],
-        # fill non-speech regions
-        'min_duration_off': HPs['min_duration_off']
-        }
+    PARAMS = {'min_duration_on': HPs['min_duration_on'],  # ignore short speech regions
+              'min_duration_off': HPs['min_duration_off']}  # fill non-speech regions
 
     # Run model
     pipeline.instantiate(PARAMS)
@@ -225,7 +221,7 @@ def segmentation(path_to_audio, filename, path_to_temp_folder, HPs):
     # Write segments to temporary file
     with open(path_to_temp_folder + '/' + 'temp-segments.txt', 'w') as f:
         for line in L:
-            f.write(str(line[0]) + ', '  + str(line[1]) + '\n')
+            f.write(str(line[0]) + ', ' + str(line[1]) + '\n')
         f.close()
 
     # Return segments
@@ -250,33 +246,23 @@ def diarisation(path_to_audio, filename, path_to_temp_folder, HPs):
     emb_model_loc = 'models/embedding/pytorch_model.bin'
     segmentation_model = Model.from_pretrained(resource_path(seg_model_loc))
     embedding_model = Model.from_pretrained(resource_path(emb_model_loc))
-    pipeline = Pipeline(segmentation=segmentation_model,
-                        embedding=embedding_model)
+    pipeline = Pipeline(segmentation=segmentation_model, embedding=embedding_model)
 
     # Set hyper-parameters
-    PARAMS = {'segmentation': {
-        # fill non-speech regions
-        'min_duration_off': HPs['min_duration_off'],
-        },
-        'clustering': {
-            'method': 'centroid',
-            'min_cluster_size': 12,
-            'threshold': 0.7045654963945799,
-        },
-    }
+    PARAMS = {
+        'segmentation': {'min_duration_off': HPs['min_duration_off']},  # fill non-speech regions
+        'clustering': {'method': 'centroid', 'min_cluster_size': 12, 'threshold': 0.7045654963945799}
+        }
 
     # Run model
     pipeline.instantiate(PARAMS)
     if HPs['speaker_num'] == 'AUTO':
         with ProgressHook() as hook:
-            diarization = pipeline(path_to_audio,
-                                   hook=hook)
+            diarization = pipeline(path_to_audio, hook=hook)
     else:
         with ProgressHook() as hook:
-            diarization = pipeline(path_to_audio,
-                                   speaker_num=int(HPs['speaker_num']),
-                                   hook=hook)
-    
+            diarization = pipeline(path_to_audio, speaker_num=int(HPs['speaker_num']), hook=hook)
+
     with open(path_to_temp_folder + '/' + 'temp-diary.txt', 'a') as f:
         for turn, _, speaker in diarization.itertracks(yield_label=True):
             f.writelines(f'{turn.start}, {turn.end}, {speaker}\n')

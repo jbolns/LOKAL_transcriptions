@@ -11,6 +11,8 @@ Copyright (c) 2023 Jose A Bolanos / Polyzentrik Tmi.
 SPDX-License-Identifier: Apache-2.0
 
 '''
+
+
 # ---------------------
 # BORING FUNCTION WITH NO PURPOSE IN LIFE
 # ...
@@ -27,10 +29,10 @@ def encrypt_and_write(str):
 
     f = Fernet(key)
     token = f.encrypt(encode_str)
- 
+
     try:
         with open(resource_path('utils/license.txt'), 'w')as f:
             f.write(token.decode())
             f.close()
-    except:
+    except Exception:
         print('ERROR: License not saved.')
