@@ -659,9 +659,10 @@ def logger(text):
     # One needs to take and put things into it as required
 
     # Annoying warnings that users do not need to see
-    if 'torchaudio backend is switched to' in text\
-        or 'torchvision is not available' in text\
-            or 'HF_HUB_DISABLE_SYMLINKS_WARNING' in text:
+    if 'set_audio_backend' in text\
+        or 'torchaudio backend is switched to' in text\
+            or 'torchvision is not available' in text\
+                or 'HF_HUB_DISABLE_SYMLINKS_WARNING' in text:
         pass
 
     # Progress bars
@@ -676,13 +677,12 @@ def logger(text):
                 or 'config.json' in text\
                     or 'model.bin' in text: 
             
-            # Flag last line of download intro
-            # Hard flag possible: filenames unlikely elsewhere
+            # Flag last log before download start
             # Delete any lines after
             bool = True 
             while bool == True:
                 console_frame.delete('end-1l', END)
-                if console_frame.get("end-1c linestart", "end-1c lineend").startswith('Else, the model needs to download,'):
+                if console_frame.get("end-1c linestart", "end-1c lineend").startswith('If model not already on local memory,'):
                     bool = False
             
             # Write the update

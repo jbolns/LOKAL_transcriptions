@@ -26,7 +26,7 @@ def transcribe_simple(settings, filename):
     '''F(x) calls transcription model and writes result to TXT file'''
 
     # Define path for output file
-    path_to_audio, path_to_prompt, family, model, approach, language, timestamps, gpu, tcs = list(settings.values())
+    path_to_audio, path_to_prompt, family, model_size, approach, language, timestamps, gpu, tcs = list(settings.values())
     path_to_output_file = os.path.dirname(path_to_audio) + '/' + filename + '.txt'
 
     # Check model family and perform transcription as appropriate
@@ -39,7 +39,7 @@ def transcribe_simple(settings, filename):
 
         # Import appropriate library and load model
         import whisper
-        model = whisper.load_model(model, download_root=resource_path('./models/whisper'))
+        model = whisper.load_model(model_size, download_root=resource_path('./models/whisper'))
 
         # Set a basic prompt or load a promt file
         if path_to_prompt != '':
@@ -50,7 +50,7 @@ def transcribe_simple(settings, filename):
 
         # Perform transcription
         print('\n...\nTranscribing audio')
-        if language == 'AUTO':
+        if language.lower() == 'auto':
             result = model.transcribe(path_to_audio,
                                       initial_prompt=prompt,
                                       fp16=gpu,
@@ -65,17 +65,20 @@ def transcribe_simple(settings, filename):
 
     # Faster Whisper track
     elif family == 'systran_faster_whisper':
+        
         # Imports and load model
         from scripts.utils import LANGUAGES
         from faster_whisper import WhisperModel
-        model = WhisperModel(model,
+          
+        model = WhisperModel(model_size,
                              device='cpu' if gpu is False else 'cuda',
                              compute_type='int8' if gpu is False else 'float16',
                              download_root=resource_path('./models/faster-whisper'))
+    
 
         # Perform transcription
         print('\n...\nTranscribing audio')
-        if language == 'AUTO':
+        if language.lower() == 'auto':
             result, _ = model.transcribe(path_to_audio,
                                          beam_size=3 if gpu is False else 5,
                                          vad_filter=True)
@@ -126,7 +129,7 @@ def transcribe_complex(settings, filename, HPs):
     import shutil
 
     # Define path for output file
-    path_to_audio, path_to_prompt, family, model, approach, language, timestamps, gpu, tcs = list(settings.values())
+    path_to_audio, path_to_prompt, family, model_size, approach, language, timestamps, gpu, tcs = list(settings.values())
     path_to_output_file = os.path.dirname(path_to_audio) + '/' + filename + '.txt'
     path_to_user = os.path.expanduser('~')
 
@@ -155,9 +158,9 @@ def transcribe_complex(settings, filename, HPs):
     print('\n...\nLoading or downloading model\
           \nIf model not already on local memory, Internet is required.\n')
     if family == 'openai_whisper':
-        whisper_loop(path_to_temp_folder, filename, path_to_prompt, model, language, gpu)
+        whisper_loop(path_to_temp_folder, filename, path_to_prompt, model_size, language, gpu)
     elif family == 'systran_faster_whisper':
-        fw_loop(path_to_temp_folder, filename, model, language, gpu)
+        fw_loop(path_to_temp_folder, filename, model_size, language, gpu)
     else:
         print('ERROR. Wrong model family name.')
 

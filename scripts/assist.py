@@ -151,7 +151,7 @@ def whisper_loop(path_to_temp_folder, filename, path_to_prompt, model_size, lang
             current_track += 1
             try:
                 # Get transcription from Whisper
-                if language == 'AUTO':
+                if language.lower() == 'auto':
                     result = model.transcribe(path_to_temp_folder + '/' + file,
                                               initial_prompt=prompt,
                                               fp16=gpu,
@@ -209,7 +209,7 @@ def fw_loop(path_to_temp_folder, filename, model_size, language, gpu):
             current_track += 1
             try:
                 # Get transcription from Faster Whisper
-                if language == 'AUTO':
+                if language.lower() == 'auto':
                     result, _ = model.transcribe(path_to_temp_folder + '/' + file,
                                                  beam_size=3 if gpu is False else 5,
                                                  vad_filter=True)
