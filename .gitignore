@@ -6,7 +6,6 @@
 
 __pycache__/
 scripts/__pycache__
-utils/dev_notes.md
 utils/innosetup_windows.iss
 
 
@@ -19,6 +18,8 @@ models/whisper/tiny.pt
 models/whisper/tiny.en.pt
 models/whisper/base.pt
 models/whisper/base.en.pt
+models/whisper/small.pt
+models/whisper/small.en.pt
 models/whisper/medium.pt
 models/whisper/medium.en.pt
 models/whisper/large.pt

@@ -14,7 +14,7 @@ add_files = [
   ('.venv\Lib\site-packages\whisper', './whisper'),
   ('.venv\Lib\site-packages\pyannote', './pyannote'),
   ('.venv\Lib\site-packages/faster_whisper', './faster_whisper'),
-  ('.venv\Lib\site-packages/faster_whisper-0.10.0-py3.11.egg-info', './faster_whisper-0.10.0-py3.11.egg-info'),
+  ('.venv\Lib\site-packages/faster_whisper-0.10.0.dist-info', './faster_whisper-0.10.0.dist-info'),
   ('.venv\Lib\site-packages\pydub', './pydub'),
   ('.venv\Lib\site-packages\pydub-0.25.1.dist-info', './pydub-0.25.1.dist-info'),
   ('.venv\Lib\site-packages\lightning_fabric', './lightning_fabric'),

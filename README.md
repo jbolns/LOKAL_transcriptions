@@ -12,8 +12,12 @@ LOKAL runs locally on your computer.[^1] It can avoid you the need to send audio
 
 ## Installation
 
-### Pre-requisites
-**FFmpeg.** Some features require [FFmpeg](https://www.ffmpeg.org/) to be installed on the computer you're using LOKAL – installation guidance is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/). If you absolutely cannot install FFmpeg, you may still be able to use LOKAL by sticking to audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
+### Prerequisites
+The following software needs to be installed in the device/computer where you plan to use LOKAL.
+* FFmpeg.
+  * Some features require [FFmpeg](https://www.ffmpeg.org/) to be installed on the computer you're using LOKAL. 
+  * Installation guidance for FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
+  * If you absolutely cannot install FFmpeg, LOKAL might still work for you if you use audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
 
 ### No-code installation
 If you want to save time, use the standalone version of LOKAL.
@@ -33,9 +37,18 @@ LOKAL offers users a number of choices. It's a long list, but once you open the 
 
 ### Required selections
 
-#### Audio selection
+#### Main selection 
 * *Select audio.* Press select audio to choose the audio to transcribe. 
-  * Currently, only *.wav* files are supported. If you do not see your audio, make sure it's in *.wav* format.
+  * If you do NOt have FFmpeg installed on your computer, only *.wav* files are supported.
+  * If you have FFmpeg, most formats are supported (click the "all files" dropdown on the browser window if you do not see your file).
+
+#### GPU & Timestamps
+* *GPU* Enable GPU mode. 
+  * Turn on to enable settings applicable to GPUs.
+  * If you do not have a GPU, leave the button as it is. LOKAL defaults to settings applicable to regular CPUs.
+* *Timestamps*. Enable timestamps
+  * Turn on to enable timestamps on final transcript.
+  * If you do not need timestamps, leave the button as it is. LOKAL defaults to a transcript without timestamps due to historical reasons (it started as a research tool and timestamps can be very annoying in this context).
 
 #### T&Cs
 * *Terms and conditions.* Use the checkbox to agree to the terms and conditions of usage.
@@ -64,6 +77,11 @@ LOKAL offers users a number of choices. It's a long list, but once you open the 
 
 ### Optional selections
 Optional hyper-parameters appear and dissapear depending on user selections. All such fields have a preset value. There is no need to even touch them. That said, users can also adjust them at will.
+
+* *OPTIONAL PROMPT*
+  * This option is shown when the user selects the original 'OpenAI: Whisper' family of models.
+  * It can be used to upload a text file containing terms that the model might struggle to identify, such as names, names of places, jargon, and acronyms. 
+  * Prompts are not infalible. They can help quite a bit, but they are not as effective as fine-tuning a model for a specific sector/industry.
 
 * *Ignore short segments.* 
   * Appears when users choose 'segmentation'.
