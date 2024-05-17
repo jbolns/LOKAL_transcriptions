@@ -643,41 +643,43 @@ def logger(text):
 
     # The "console" on the GUI is not actually a "console"
     # One needs to take and put things into it as required
-    warnings = ['set_audio_backend', 'torchaudio backend is switched to', 'torchvision is not available', 'HF_HUB_DISABLE_SYMLINKS_WARNING']
-    if any(warning in text for warning in warnings):  # Annoying warnings most users do not need
+    warnings = ['set_audio_backend',
+                'torchaudio backend is switched to',
+                'torchvision is not available',
+                'To support symlinks on Windows,',
+                'HF_HUB_DISABLE_SYMLINKS_WARNING']
+    
+    if any(warning in text for warning in warnings):  # Ignore annoying warnings that most users do not need
         pass
+    
+    elif '%' in text:  # Take a special approach to render progress bars
 
-    elif '%' in text:  # Progress bars
-
-        # FASTER WHISPER DOWNLOADS
         fs_download_terms = ['vocabulary.txt', 'tokenizer.json', 'config.json', 'model.bin']
-        if any(term in text for term in fs_download_terms):
+        pyannote_terms = ['segmentation', 'embeddings', 'diarization']
+        
+        if any(term in text for term in fs_download_terms):  # Faster whisper downloads (uses tqdm)
 
-            # Flag last log before download start
-            # Delete any lines after
+            # Flag last log before download start & delete lines after
             bool = True
             while bool is True:
                 console_frame.delete('end-1l', END)
                 if console_frame.get("end-1c linestart", "end-1c lineend").startswith('If model not already on local memory,'):
                     bool = False
 
-            # Write the update
-            if 'model.bin' in text:
+            if 'model.bin' in text:  # Rewrite progress bar only for main model file
                 text = text.replace('\n', '').strip()
                 text = f'\n\nDownloading...\n{text}'
                 console_frame.insert(END, text)
-            else:
-                print('\n\nDownloading...\n')
+            else:  # For all other downloads, just declare that something is downloading
+                text = '\n\nDownloading...\n'
+                console_frame.insert(END, text)
 
-        # PYANNOTE (RICH) BARS
-        pyannote_terms = ['segmentation', 'embeddings', 'diarization']
-        if any(term in text for term in pyannote_terms):
+        elif any(term in text for term in pyannote_terms):  # Pyannote bars (uses rich)
             console_frame.delete('end-2l', END)
             console_frame.insert('end', '\n{}'.format(text))
 
-        # TREAT ANYTHING ELSE AS A NORMAL UPDATE
-        # Better to render a progress bar badly than jam the log
-        else:
+        else:  # Default: Normal Whisper (tqdm, but much simpler than faster whisper)
+            console_frame.delete('end-2l', 'end-1l')
             console_frame.insert(INSERT, text)
     else:
         console_frame.insert(INSERT, text)
