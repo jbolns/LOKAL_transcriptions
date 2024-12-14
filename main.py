@@ -622,7 +622,7 @@ def browse_for_file(type_of_file):
             f"\n> Path to selected {type_of_file} is: {path_to_file}.",
             "[LKL|MSG]",
         )
-        ffmpeg_warn(f".{path_to_file.split(".")[-1]}")
+        ffmpeg_warn(f".{path_to_file.split('.')[-1]}")
     else:
         if type_of_file == "audio":
             settings["path_to_audio"] = ""
@@ -641,18 +641,21 @@ def key_settings():
     settings["gpu_on"] = gpu_on.get()
 
 
-def ffmpeg_warn(mode):
+def ffmpeg_warn(type_or_family):
     """Lets user know they need to install FFmpeg to run a transcription using specific settings that require FFmpeg."""
 
     import subprocess
 
     # Check if file is WAV - do not disturb user if so
-    if mode == ".wav":
+    if type_or_family == ".wav":
+        return True
+    
+    # Check if model selection is systran (faster whisper) - do not disturb user if so
+    if type_or_family == "systran":
         return True
 
     # If file is not WAV
     else:
-
         # Check if FFmpeg is installed  - do not disturb user if so
         result = subprocess.run(["ffmpeg"], shell=True, capture_output=True, text=True)
         checks = ["ffmpeg version", "libavcodec", "libavformat", "libavutil"]
@@ -660,10 +663,10 @@ def ffmpeg_warn(mode):
             return True
 
         # If FFmpeg not installed, offer appropriate warnings
-        elif mode.startswith("."):
-            msg = f"FFmpeg ( https://www.ffmpeg.org/ ) is needed to transcribe {mode} audios. To use LOKAL without FFmpeg, stick to .wav audios."
+        elif type_or_family.startswith("."):
+            msg = f"FFmpeg ( https://www.ffmpeg.org/ ) is needed to transcribe {type_or_family} audios. To use LOKAL without FFmpeg, stick to .wav audios."
         else:
-            msg = f"FFmpeg ( https://www.ffmpeg.org/ ) is needed to use {mode} models. To use LOKAL without FFmpeg, change back to Faster Whisper."
+            msg = f"FFmpeg ( https://www.ffmpeg.org/ ) is needed to use this family of models. To use LOKAL without FFmpeg, change back to Faster Whisper."
 
     messagebox.showwarning(title="Confirm pre-requisites are in place", message=msg)
     return True
@@ -684,9 +687,8 @@ def family_choice(e):
     lang_select.current(0)
 
     # Conditional screen updates
-    if settings["family"].lower() == "openai":
-        # Warn user that this family requires FFmpeg
-        if ffmpeg_warn("the original Whisper"):
+    if ffmpeg_warn(settings["family"].lower()):
+        if settings["family"].lower() == "openai":
             # Mount prompt selection area
             prompt_separator.pack(anchor="w", fill=X, pady=[21, 14])
             prompt_intro.pack(anchor="w", pady=0)
@@ -698,17 +700,17 @@ def family_choice(e):
             model_select.current(0)
             settings["model"] = model_select.get().lower()
 
-    else:
-        # Unmount prompt selection area
-        prompt_select.forget()
-        prompt_intro.forget()
-        prompt_separator.forget()
-        # Rewrite model sizes
-        model_select.config(
-            value=[i.capitalize() for i in MODEL_SIZES[settings["family"]]]
-        )
-        model_select.current(0)
-        settings["model"] = model_select.get().lower()
+        else:
+            # Unmount prompt selection area
+            prompt_select.forget()
+            prompt_intro.forget()
+            prompt_separator.forget()
+            # Rewrite model sizes
+            model_select.config(
+                value=[i.capitalize() for i in MODEL_SIZES[settings["family"]]]
+            )
+            model_select.current(0)
+            settings["model"] = model_select.get().lower()
 
 
 def approach_choice(e):
@@ -843,7 +845,7 @@ def logger(text, source):
                 progress = int(100*( current_chunk / total_chunks))
                 console_frame.insert(
                     INSERT,
-                    f"- Rough progress estimate: {progress}% {"" if progress <= 100 else "(estimate can go over 100%, especially for long audios – if it changes regularly, all is good."}\n",
+                    f"- Rough progress estimate: {progress}% {'' if progress <= 100 else '(for long audios, estimate can go significantly over 100%.'}\n",
                 )    
         
         elif text.startswith("[LKL|MSG]"):
@@ -906,7 +908,7 @@ def pop_license(e):
     )
     license_get.pack(anchor="w", padx=7, pady=[0, 7])
     license_get.bind(
-        "<Button-1>", lambda e: webbrowser.open("https://www.josebolanos.xyz/gateway/")
+        "<Button-1>", lambda e: webbrowser.open("https://www.josebolanos.xyz/en/gateway/")
     )
 
     tb.Label(
