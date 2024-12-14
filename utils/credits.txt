@@ -1,7 +1,7 @@
 LOKAL v1.0.0-alpha
 
 => APPLIED AI
-Dr J, Polyzentrik Tmi https://www.polyzentrik.com/
+Dr J https://www.josebolanos.xyz/
 
 => AI MODELS
 OpenAI https://github.com/openai/whisper

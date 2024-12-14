@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 v1. March 2024.
 @author: Dr J. / Polyzentrik Tmi.
 
@@ -10,7 +10,7 @@ Any classes must be justified exceptionally well.
 Copyright (c) 2023 Jose A Bolanos / Polyzentrik Tmi.
 SPDX-License-Identifier: Apache-2.0
 
-'''
+"""
 
 
 # ---------------------
@@ -23,7 +23,7 @@ def encrypt_and_write(str):
     encode_str = str.encode()
 
     key = Fernet.generate_key()
-    with open(resource_path('utils/key.txt'), 'w')as f:
+    with open(resource_path("utils/key.txt"), "w")as f:
         f.write(key.decode())
         f.close()
 
@@ -31,8 +31,8 @@ def encrypt_and_write(str):
     token = f.encrypt(encode_str)
 
     try:
-        with open(resource_path('utils/license.txt'), 'w')as f:
+        with open(resource_path("utils/license.txt"), "w")as f:
             f.write(token.decode())
             f.close()
     except Exception:
-        print('ERROR: License not saved.')
+        print("ERROR: License not saved.")

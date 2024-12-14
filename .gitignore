@@ -3,40 +3,22 @@
 .external-licenses/dist
 .vscode
 .venv
-
-__pycache__/
-scripts/__pycache__
 utils/innosetup_windows.iss
 
+# Caches
+__pycache__/
+scripts/__pycache__
 
 # Files & folders for PyInstaller and InnoSetup shenanigans
-build
-dist
+build/
+dist/
 
-# Models saved locally for testing (LOKAL doesn't need them for setup - they download when called/used)
-models/whisper/tiny.pt
-models/whisper/tiny.en.pt
-models/whisper/base.pt
-models/whisper/base.en.pt
-models/whisper/small.pt
-models/whisper/small.en.pt
-models/whisper/medium.pt
-models/whisper/medium.en.pt
-models/whisper/large.pt
-models/whisper/large-v1.pt
-models/whisper/large-v2.pt
-models/whisper/large-v3.pt
+# Models saved locally for testing (not needed for setup - models download on first use)
+models/openai/
+models/systran/
+models/openai_hf/
+models/distil-whisper_hf/
 
-models/faster-whisper/.locks
-models/faster-whisper/models--Systran--faster-whisper-tiny
-models/faster-whisper/models--Systran--faster-whisper-tiny.en
-models/faster-whisper/models--Systran--faster-whisper-base
-models/faster-whisper/models--Systran--faster-whisper-base.en
-models/faster-whisper/models--Systran--faster-whisper-small
-models/faster-whisper/models--Systran--faster-whisper-small.en
-models/faster-whisper/models--Systran--faster-whisper-medium
-models/faster-whisper/models--Systran--faster-whisper-medium.en
-models/faster-whisper/models--Systran--faster-whisper-large
-models/faster-whisper/models--Systran--faster-whisper-large-v1
-models/faster-whisper/models--Systran--faster-whisper-large-v2
-models/faster-whisper/models--Systran--faster-whisper-large-v3
+# License files used for testing
+utils/key.txt
+utils/license.txt
