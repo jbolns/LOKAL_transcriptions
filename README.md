@@ -2,81 +2,83 @@
 LOKAL is a user-friendly application to do AI transcriptions locally (i.e. on your own computer).
 * **Low cost.** Payment is voluntary, and very small.
 * **High quality.** Quality is on-par with on-cloud alternatives.
-* **Privacy-aware.** LOKAL avoids the need to send audio data to third parties. It is also possible to run transcriptions entirely offline.
-* **Open-source.** Commercial use is allowed under the license terms. 
+* **Multiple model providers.** LOKAL gives users the option to choose between several model providers (supports compatibility and avoids supplier lockdown)
+* **Privacy-aware.** LOKAL avoids the need to send audio data to third parties and it is possible to do transcriptions offline.[^1]
+* **Open-source.** Commercial use is allowed. 
 
 ## Why/when to use LOKAL?
-Interviews, focus groups, statements, and other oral stories can hold biometric data, personal identifiable information (PII), and sensitive details. The risks of sharing such data with untrusted 3rd parties is significant, including a potential for audio "deepfakes".
+There are many situations where LOKAL can be advantageous. 
 
-LOKAL runs locally on your computer.[^1] It can avoid you the need to send audios out.
+* **In research projects.**
+  * Interviews, focus groups, statements, and other oral stories can hold biometric data, personal identifiable information (PII), and sensitive details. The risks of sharing such data with untrusted 3rd parties is significant, including a potential for audio "deepfakes".
+  * LOKAL runs locally on your computer, which can help you manage the risk of these details leaking accidentally.
+* **In places with complex data privacy regulations (e.g. GDPR).**
+  * Do you know how a third-party transcription provider handles audio data? Do you have full information about how many servers are involved, where, and for how long each server stores audios or transcriptions, or if and to what extent usage or audio statistics are logged? Moreover, have your users/participants consented to all of this? 
+  * Since LOKAL works directly on your computer, LOKAL might help you simplify compliance.[^2]
+* **When audios contain sensitive or strategic information.**
+  * LOKAL downloads models to your computer, performs the transcription there, and saves the output to the same folder where the original audio is located. Moreover, while the very first transcription using a given model requires Internet for the model download[^3], it is possible to use LOKAL offline.
+  *As audios do not need to leave your computer, you can take several approaches to reducing the risk of audios leaking, being hacked, or accidentally being shared.
 
 ## Installation
 
-### Prerequisites
-The following software needs to be installed in the device/computer where you plan to use LOKAL.
-* FFmpeg.
-  * Some features require [FFmpeg](https://www.ffmpeg.org/) to be installed on the computer you're using LOKAL. 
-  * Installation guidance for FFmpeg is available [here](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/).
-  * If you absolutely cannot install FFmpeg, LOKAL might still work for you if you use audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
-
 ### No-code installation
-If you want to save time, use the standalone version of LOKAL.
+LOKAL is super easy to install and run:
+* Download the latest installer file (.exe) available [here](https://github.com/jbolns/LOKAL_transcriptions/releases). 
+* Double-click to install.
+* Use.
 
-1. Download the executable (.exe) installation file available [here](https://github.com/jbolns/LOKAL_transcriptions/releases).
-2. Double-click.
-3. Install.
-4. Use.
+> *Note. You can also use LOKAL as a pure Python app. Installation is trickier but is ideal for Python developers who wish to tinker with the code. Instructions at the end of this README.*
 
-### ALTERNATIVE Python installation
-You can also use LOKAL as a pure Python app. Installation and usage are much harder, but you get more freedom and can tinker with the code. See instructions at the end of this README.
+### Compatibility
+By default, LOKAL is set to use *Systran's Faster Whisper* AI models and *.wav* audios. You can transcribe '.wav' audios using *Systran's Faster Whisper* from the moment you install LOKAL.
 
-## Instructions to use LOKAL
-LOKAL offers users a number of choices. It's a long list, but once you open the app you'll see thing are fairly intuitive.
+To use other audio formats or models, use LOKAL on a computer with [FFmpeg](https://www.ffmpeg.org/) (if you need to install it, I find [this guidance](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/) somewhat easy to follow). Keep in mind FFmpeg works separately to LOKAL. LOKAL calls FFmpeg. FFmpeg's window opens briefly (typically seconds), does its thing, then closes.
 
-![Preview of LOKAL](/images/preview-LOKAL.png)
+If you absolutely cannot install FFmpeg, stick to *.wav* audios and Systran's 'Faster Whisper' models.
+
+
+## Usage
+LOKAL packs a lot. The list of options available is long, but once you open LOKAL, you'll see everything is intuitive and esy-to-use.
+
+![Preview of LOKAL in light mode](/images/light-mode.png)
 
 ### Required selections
+Some selections are necessary for a transcription to be possible. Buttons and dropdowns to make these choices are always visible.
 
-#### Main selection 
-* *Select audio.* Press select audio to choose the audio to transcribe. 
-  * If you do NOt have FFmpeg installed on your computer, only *.wav* files are supported.
-  * If you have FFmpeg, most formats are supported (click the "all files" dropdown on the browser window if you do not see your file).
+* *Select audio.* Press select audio to transcribe. 
+  * If you do NOT have FFmpeg installed, use only *.wav* audios.
 
-#### GPU & Timestamps
 * *GPU* Enable GPU mode. 
   * Turn on to enable settings applicable to GPUs.
   * If you do not have a GPU, leave the button as it is. LOKAL defaults to settings applicable to regular CPUs.
+
 * *Timestamps*. Enable timestamps
   * Turn on to enable timestamps on final transcript.
   * If you do not need timestamps, leave the button as it is. LOKAL defaults to a transcript without timestamps due to historical reasons (it started as a research tool and timestamps can be very annoying in this context).
 
-#### T&Cs
 * *Terms and conditions.* Use the checkbox to agree to the terms and conditions of usage.
   * Click on the link to read terms and conditions.
   * Agree to terms and conditions using the checkbox.
 
-#### Model
-* *Model (family).* Use the dropwodn to choose the family of models to use for transcription.
-  * Currently, LOKAL offers two model families, OpenAI's Whisper and Systran's take on Whisper, called "faster-whisper".
-  * OpenAI's Whisper requires FFmpeg. Systran's Faster Whisper does not.
-  * The goal is to add more options.
-* *Model (size).* Use the dropdown to specify the model size to use for transcription.
-  * Models come in different sizes. The larger the model, the better the output. The larger the model, the longer the transcription takes.
-  * Rule of thumb. If you can understand the conversation easily, one of the smaller models might be enough.
+* *Model (family).* Use the dropwodn to choose the model to use for transcription.
+  * *Family.* Choose your preferred AI model provider.
+    * If you do NOT have FFmpeg installed, use only *Systran's Faster Whisper* audios.
+  * *Size.* Specify the model size to use for transcription.
+    * The larger the model, the higher the quality.
+    * The larger the model, the longer the transcription takes.
+    * Rule of thumb! If you can understand the conversation easily, one of the smaller models might suffice.
 
-#### Approach
 * *Approach.* Use the dropdown to choose between three different approaches to transcription, meant for different types of conversations.
   * *Simple.* A straightforward word-by-word transcription. Best for complex/dynamic conversations with many speakers and interruptions, where it is very difficult to track of all speaker changes.
   * *Segmentation.* A transcription split into paragraphs roughly following pauses and changes of speakers. Best for semi-structured conversations like interviews and focus groups, where tracking speaker changes is easier.
   * *Diarisation.* A transcription split into blocks roughly corresponding to segments by specific speakers (with speaker labels). Best for structured conversations where speakers have clear turns and speaker changes are clear, like panels or seminars.
 
-#### Language:
 * *Language.* Use the dropdown to select the language for transcription.
   * If left blank, the model tries to identify the language by itself. 
   * Specifying the language might make it easier for the model and speed things a little.
 
 ### Optional selections
-Optional hyper-parameters appear and dissapear depending on user selections. All such fields have a preset value. There is no need to even touch them. That said, users can also adjust them at will.
+Some selections are optional. Relevant buttons and dropdowns appear and dissapear as available (you can ignore them if desired - LOKAL will load default values if no selection is made).
 
 * *OPTIONAL PROMPT*
   * This option is shown when the user selects the original 'OpenAI: Whisper' family of models.
@@ -96,16 +98,18 @@ Optional hyper-parameters appear and dissapear depending on user selections. All
   * Enables users to enter the exact number of speakers. 
   * There is no need to set a number. The diarisation model can try and guess the number of speakers. That said, results can be better if the model knows the number of speakers in advance.
 
-## Maximising privacy
-LOKAL is not a guarantee of privacy. That said, LOKAL can help you manage privacy in the following ways:
-* LOKAL avoids you the need to send audios to third-party service providers. This can help reduce risk exposure, especially if dealing with sensitive or easily identifiable audios.
-* LOKAL allows you to run transcriptions offline. Running a few mock transcriptions while online is needed to trigger the download of models. After your chosen models have downloaded, however, you can disconnect from the Internet and everything should works just fine.
-* If you need or want maximal privacy, you can also copy LOKAL's installation (LOKAL installs to *'~/<-username->/AppData/Local/Programs/LOKAL'*) to an island computer **after** triggering the download of models.
+## Privacy
+LOKAL is not a guarantee of privacy. There are many privacy risks in any computer and software.
+
+That said, LOKAL can help you manage privacy in the following ways:
+* LOKAL avoids you the need to send audios to third-party service providers, thereby reducing risk exposure.
+* LOKAL allows you to avoid the need to consent to data usage terms that may (and often do) have troublesome concessions.
+* LOKAL allows you to run transcriptions offline, so you can use LOKAL in an isolated transcription environment if dealing with extremely sensitive data.
 
 ## Known limitations
 LOKAL aims to assist humans with preparatory tasks rather than replace humans. Reducing the costs and time of initial speech-to-text conversion allows users to assign more resources on editing. 
 
-For the same reason, users remain in control and are responsible for the final quality of transcriptions. Users should therefore keep in mind all AI models and systems have limitations.
+For the same reason, users remain in control and are responsible for the final quality of transcriptions and should therefore always remember that all AI models and systems have limitations.
 
 LOKAL's limitations include but are not limited to:
 * All models may present potentially high error rates.
@@ -114,17 +118,12 @@ LOKAL's limitations include but are not limited to:
 * The transcription models can struggle with conversations taking place in different languages – an idea is to do multiple runs with different language selections and then join the results.
 
 ## Having troubles?
-We made LOKAL as easy to install and use as possible. However do get in touch if you feel stuck: hello@polyzentrik.com.
+I made LOKAL as easy to install and use as possible. However do get in touch if you feel stuck: hello@josebolanos.xyz.
 
 ## License
-LOKAL (transcriptions) is a product by [polyzentrik.com](https://www.polyzentrik.com/), released under an Apache 2.0 open source license. The code for LOKAL is available via GitHub. 
+LOKAL (transcriptions) is released under an Apache 2.0 open source license. The code is available via GitHub. 
 
-LOKAL implements a voluntary activation approach with a soft free trial: 
-* Core functionality works regardless of whether LOKAL is activated
-* Activation enables visual styles
-* Activation is also needed to keep the user interface pretty after five free trial transcriptions
-
-Activation is possible using the invoice number you get after [making a very small voluntary payment](https://www.polyzentrik.com/help-us-help/).
+LOKAL implements a non-commercial open-source approach I like to call "ugly mode". The user interface looks a little ugly, but all functionality works regardless of whether LOKAL is activated or not. There is, additionally, an option to make a voluntary payment to make the user interface pretty.
 
 .
 
@@ -135,7 +134,7 @@ Activation is possible using the invoice number you get after [making a very sma
 ## OPTIONAL Python installation (advanced coding required)
 **Skip this section if not a coder. It is REALLY hard.**
 
-You can also use LOKAL as a pure Python app. 
+Python developer may wish to use LOKAL as a pure Python app rather than use the *.exe* installer. 
 
 Assuming you have Python (3.11.0) installed on your computer, you need to:
 1. Clone this repository.
@@ -161,3 +160,5 @@ Assuming you have Python (3.11.0) installed on your computer, you need to:
 **Footnotes**
 
 [^1]: An Internet connection is needed for initial model download. The first time you choose a model, the model downloads. After, it is possible to perform transcriptions offline. Resetting models is possible from within LOKAL, which deletes all models in memory and forces a re-download next time a model is used.
+[^2]: Adherence to any specific regulations is not guaranteed. Moreover, since the exact requirements vary across jurisdictions, it is also impossible to say exactly how LOKAL could facilitate compliance in any given jurisdiction.
+[^3]: The very first time you run a specific model, Internet is needed to download the model. After that, transcription can be undertaken without a connection to the Internet.
