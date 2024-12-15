@@ -32,9 +32,10 @@ LOKAL is super easy to install and run:
 ### Compatibility
 By default, LOKAL is set to use *Systran's Faster Whisper* AI models and *.wav* audios. You can transcribe '.wav' audios using *Systran's Faster Whisper* from the moment you install LOKAL.
 
-To use other audio formats or models, use LOKAL on a computer with [FFmpeg](https://www.ffmpeg.org/) (if you need to install it, I find [this guidance](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/) somewhat easy to follow).
+To use other audio formats or models, use LOKAL on a computer with [FFmpeg](https://www.ffmpeg.org/) (if you need to install it, I find [this guidance](https://www.geeksforgeeks.org/how-to-install-ffmpeg-on-windows/) somewhat easy to follow). Keep in mind FFmpeg works separately to LOKAL. LOKAL calls FFmpeg. FFmpeg's window opens briefly (typically seconds), does its thing, then closes.
 
-If you absolutely cannot install FFmpeg, LOKAL might still work for you if you use audios in *.wav* format and Systran's 'Faster Whisper' models. Other file types and models require FFmpeg.
+If you absolutely cannot install FFmpeg, stick to *.wav* audios and Systran's 'Faster Whisper' models.
+
 
 ## Usage
 LOKAL packs a lot. The list of options available is long, but once you open LOKAL, you'll see everything is intuitive and esy-to-use.
